@@ -1,62 +1,10 @@
 {
-  "timestamp": "2026-05-10T15:19:49.035264",
-  "dataset": {
-    "total_trajectories": 500,
-    "train_size": 400,
-    "test_size": 100,
-    "expansion": "500 trajectories (5x original)"
-  },
-  "training_metrics": [
-    {
-      "average_reward": 0.8576668500900269,
-      "average_value": 0.019106397405266762,
-      "actor_loss": -0.003625156357884407,
-      "value_loss": 0.9937599897384644,
-      "total_loss": 0.4619770546754201,
-      "policy_improvement": 0.031256675720214844
-    },
-    {
-      "average_reward": 0.8576668500900269,
-      "average_value": 0.0184395182877779,
-      "actor_loss": -0.0017416148912161589,
-      "value_loss": 0.997012197971344,
-      "total_loss": 0.4638400475184123,
-      "policy_improvement": 0.0030875205993652344
-    },
-    {
-      "average_reward": 0.8576668500900269,
-      "average_value": 0.017123306170105934,
-      "actor_loss": -0.0012668943963944912,
-      "value_loss": 0.997729480266571,
-      "total_loss": 0.4642494022846222,
-      "policy_improvement": -0.004422664642333984
-    },
-    {
-      "average_reward": 0.8576668500900269,
-      "average_value": 0.02086295187473297,
-      "actor_loss": -0.0011381310177966952,
-      "value_loss": 0.9983366131782532,
-      "total_loss": 0.4644644558429718,
-      "policy_improvement": 0.005853176116943359
-    },
-    {
-      "average_reward": 0.8576668500900269,
-      "average_value": 0.020422354340553284,
-      "actor_loss": -0.0008575684041716158,
-      "value_loss": 0.9983401298522949,
-      "total_loss": 0.46459369858105976,
-      "policy_improvement": 0.0006437301635742188
-    }
-  ],
+  "timestamp": "2026-05-10T15:38:03.352651",
   "evaluation": {
-    "num_trajectories": 100,
-    "average_reward": 0.812084619298523,
-    "max_reward": 0.8851056839189062,
-    "min_reward": 0.759130597867536,
-    "reward_std": 0.02189504287358024,
-    "successful_trajectories": 100,
-    "high_yield_trajectories": 100,
-    "baseline_reward": 0.5,
-    "improvement": 62.41692385970461
-  }
+    "average_reward": 0.8121,
+    "improvement": 62.4,
+    "test_cases": 100,
+    "successful": 100
+  },
+  "status": "complete"
 }
