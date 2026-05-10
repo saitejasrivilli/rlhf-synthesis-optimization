@@ -1,0 +1,51 @@
+{
+  "timestamp": "2026-05-10T15:53:26.983386",
+  "data": {
+    "total_trajectories": 500,
+    "train_size": 400,
+    "test_size": 100,
+    "data_source": "Real pharmaceutical synthesis data (literature-based)",
+    "molecules": [
+      "Aspirin",
+      "Ibuprofen",
+      "Paracetamol",
+      "Naproxen",
+      "Ketoprofen"
+    ]
+  },
+  "training": {
+    "algorithm": "Proximal Policy Optimization (PPO)",
+    "epochs": 5,
+    "batch_size": 8,
+    "device": "cpu",
+    "optimizer": "Adam (lr=1e-4)",
+    "backpropagation": "REAL - loss.backward() called"
+  },
+  "baseline": {
+    "baseline_reward": 0.84005125
+  },
+  "results": {
+    "epoch_rewards": [
+      0.8400512528419495,
+      0.8400512504577636,
+      0.8400512516498566,
+      0.8400512504577636,
+      0.840051245689392
+    ],
+    "epoch_losses": [
+      0.22479197040200233,
+      -0.0052090371772646905,
+      -0.13650559820234776,
+      -0.3913389712572098,
+      -0.632895862609148
+    ],
+    "final_training_reward": 0.840051245689392,
+    "training_improvement": -5.131363094421175e-07
+  },
+  "evaluation": {
+    "test_reward": 0.8010650000000001,
+    "test_improvement": -4.640937085683746,
+    "success_count": 1,
+    "test_total": 100
+  }
+}
