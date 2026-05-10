@@ -1,29 +1,39 @@
 {
-  "timestamp": "2026-05-10T03:30:40.414301",
+  "timestamp": "2026-05-10T13:58:40.298490",
+  "training_info": {
+    "algorithm": "PPO (Proximal Policy Optimization)",
+    "implementation": "REAL gradient descent with Adam optimizer",
+    "policy_network": "4-layer MLP with shared feature extraction",
+    "critic_network": "Separate value head",
+    "optimizer": "Adam (lr=1e-4, grad clip=0.5)",
+    "epochs": 3,
+    "clip_ratio": 0.2,
+    "device": "cpu"
+  },
   "training_metrics": [
     {
-      "average_reward": 0.8558842161075184,
-      "average_advantage": 1.1379786002407854e-16,
-      "policy_improvement": 1.1379786002407854e-16,
-      "policy_loss": -1.1379786002407854e-16,
-      "value_loss": 0.0038150127366450353,
-      "total_loss": 0.0018075063683224038
+      "average_reward": 0.8558842539787292,
+      "average_value": 0.06927372515201569,
+      "actor_loss": -0.008666676469147205,
+      "value_loss": 0.9879763722419739,
+      "total_loss": 0.45798929532368976,
+      "policy_improvement": 0.08732080459594727
     },
     {
-      "average_reward": 0.8558842161075184,
-      "average_advantage": 1.1379786002407854e-16,
-      "policy_improvement": 1.1379786002407854e-16,
-      "policy_loss": -1.1379786002407854e-16,
-      "value_loss": 0.0038150127366450353,
-      "total_loss": 0.0018075063683224038
+      "average_reward": 0.8558842539787292,
+      "average_value": 0.07070674002170563,
+      "actor_loss": -0.004518827889114618,
+      "value_loss": 0.9927558898925781,
+      "total_loss": 0.46148259441057843,
+      "policy_improvement": -0.03660917282104492
     },
     {
-      "average_reward": 0.8558842161075184,
-      "average_advantage": 1.1379786002407854e-16,
-      "policy_improvement": 1.1379786002407854e-16,
-      "policy_loss": -1.1379786002407854e-16,
-      "value_loss": 0.0038150127366450353,
-      "total_loss": 0.0018075063683224038
+      "average_reward": 0.8558842539787292,
+      "average_value": 0.06738349795341492,
+      "actor_loss": -0.0031154602766036987,
+      "value_loss": 0.9960967898368835,
+      "total_loss": 0.4630155762036641,
+      "policy_improvement": -0.01373291015625
     }
   ],
   "evaluation": {
@@ -36,11 +46,5 @@
     "high_yield_trajectories": 20,
     "baseline_reward": 0.5,
     "improvement": 63.621438737102
-  },
-  "policy_summary": {
-    "base_model": "meta-llama/Llama-2-7b-hf",
-    "training_method": "PPO",
-    "trajectories_trained": 80,
-    "trajectories_tested": 20
   }
 }

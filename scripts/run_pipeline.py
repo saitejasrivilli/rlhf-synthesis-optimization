@@ -1,6 +1,4 @@
 #!/usr/bin/env python3
-"""Project 3: RLHF with REAL PPO (actual backpropagation)"""
-
 import sys
 import logging
 import json
@@ -20,7 +18,6 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 def load_trajectories(file_path):
-    """Load synthesis trajectories"""
     trajectories = []
     with open(file_path) as f:
         for line in f:
@@ -33,49 +30,38 @@ def main():
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     
     logger.info("=" * 80)
-    logger.info("Project 3: RLHF with REAL PPO (Actual Backpropagation)")
+    logger.info("Project 3: RLHF with PPO (EXPANDED DATASET)")
     logger.info("=" * 80)
     
-    # Load trajectories
-    logger.info("[1/5] Loading synthesis trajectories...")
-    trajectories = load_trajectories(Path("data/labeled/trajectories.jsonl"))
+    logger.info("[1/5] Loading 500 synthesis trajectories...")
+    trajectories = load_trajectories(Path("data/labeled/trajectories_expanded.jsonl"))
     split_idx = int(len(trajectories) * 0.8)
     train_traj = trajectories[:split_idx]
     test_traj = trajectories[split_idx:]
-    logger.info(f"✓ Loaded {len(train_traj)} train, {len(test_traj)} test trajectories")
+    logger.info(f"✓ Loaded {len(train_traj)} train, {len(test_traj)} test")
     
-    # Initialize reward model
-    logger.info("[2/5] Initializing real reward model...")
+    logger.info("[2/5] Initializing reward model...")
     reward_model = RealRewardModel()
     
-    # Initialize policy with learnable parameters
-    logger.info("[3/5] Initializing PPO policy network...")
-    policy = RealPPOPolicy(state_dim=128, action_dim=32, hidden_dim=256)
+    logger.info("[3/5] Initializing PPO policy...")
+    policy = RealPPOPolicy(state_dim=128, action_dim=32, hidden_dim=256).to(device)
     
-    # Create trainer with REAL gradient descent
-    logger.info("[4/5] Setting up PPO trainer with ACTUAL backpropagation...")
+    logger.info("[4/5] Setting up trainer...")
     trainer = RealPPOTrainer(policy, reward_model, learning_rate=1e-4, device=device)
     
-    # Train with REAL backprop
-    logger.info("[5/5] Training policy with REAL gradient descent...")
-    training_metrics = trainer.train(train_traj, epochs=3)
+    logger.info("[5/5] Training PPO on expanded dataset...")
+    training_metrics = trainer.train(train_traj, epochs=5)
     
-    # Evaluate
     eval_results = evaluate_rlhf_policy(test_traj, reward_model)
     
-    # Save results
     output_file = get_results_dir() / "rlhf_results.json"
     final_results = {
         "timestamp": datetime.now().isoformat(),
-        "training_info": {
-            "algorithm": "PPO (Proximal Policy Optimization)",
-            "implementation": "REAL gradient descent with Adam optimizer",
-            "policy_network": "4-layer MLP with shared feature extraction",
-            "critic_network": "Separate value head",
-            "optimizer": "Adam (lr=1e-4, grad clip=0.5)",
-            "epochs": 3,
-            "clip_ratio": 0.2,
-            "device": device
+        "dataset": {
+            "total_trajectories": len(trajectories),
+            "train_size": len(train_traj),
+            "test_size": len(test_traj),
+            "expansion": "500 trajectories (5x original)"
         },
         "training_metrics": training_metrics,
         "evaluation": eval_results
@@ -84,10 +70,10 @@ def main():
     save_rlhf_results(final_results, output_file)
     
     logger.info("=" * 80)
-    logger.info("✓ PPO TRAINING COMPLETE WITH REAL BACKPROPAGATION")
+    logger.info("✓ PPO TRAINING COMPLETE (EXPANDED)")
+    logger.info(f"  Trajectories: {len(trajectories)}")
     logger.info(f"  Final Reward: {eval_results['average_reward']:.4f}")
     logger.info(f"  Improvement: {eval_results['improvement']:+.1f}%")
-    logger.info(f"  Device: {device}")
     logger.info("=" * 80)
 
 if __name__ == "__main__":
