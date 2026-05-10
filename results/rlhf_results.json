@@ -1,50 +1,62 @@
 {
-  "timestamp": "2026-05-10T13:58:40.298490",
-  "training_info": {
-    "algorithm": "PPO (Proximal Policy Optimization)",
-    "implementation": "REAL gradient descent with Adam optimizer",
-    "policy_network": "4-layer MLP with shared feature extraction",
-    "critic_network": "Separate value head",
-    "optimizer": "Adam (lr=1e-4, grad clip=0.5)",
-    "epochs": 3,
-    "clip_ratio": 0.2,
-    "device": "cpu"
+  "timestamp": "2026-05-10T15:03:10.691033",
+  "dataset": {
+    "total_trajectories": 500,
+    "train_size": 400,
+    "test_size": 100,
+    "expansion": "500 trajectories (5x original)"
   },
   "training_metrics": [
     {
-      "average_reward": 0.8558842539787292,
-      "average_value": 0.06927372515201569,
-      "actor_loss": -0.008666676469147205,
-      "value_loss": 0.9879763722419739,
-      "total_loss": 0.45798929532368976,
-      "policy_improvement": 0.08732080459594727
+      "average_reward": 0.8576668500900269,
+      "average_value": -0.0041811587288975716,
+      "actor_loss": -0.0038036180194467306,
+      "value_loss": 0.994127094745636,
+      "total_loss": 0.46197529633839923,
+      "policy_improvement": 0.00985860824584961
     },
     {
-      "average_reward": 0.8558842539787292,
-      "average_value": 0.07070674002170563,
-      "actor_loss": -0.004518827889114618,
-      "value_loss": 0.9927558898925781,
-      "total_loss": 0.46148259441057843,
-      "policy_improvement": -0.03660917282104492
+      "average_reward": 0.8576668500900269,
+      "average_value": -0.0028653787449002266,
+      "actor_loss": -0.001946301432326436,
+      "value_loss": 0.9976090788841248,
+      "total_loss": 0.4638814926147461,
+      "policy_improvement": -0.009036064147949219
     },
     {
-      "average_reward": 0.8558842539787292,
-      "average_value": 0.06738349795341492,
-      "actor_loss": -0.0031154602766036987,
-      "value_loss": 0.9960967898368835,
-      "total_loss": 0.4630155762036641,
-      "policy_improvement": -0.01373291015625
+      "average_reward": 0.8576668500900269,
+      "average_value": -0.0014887714060023427,
+      "actor_loss": -0.0012236147886142135,
+      "value_loss": 0.9979475140571594,
+      "total_loss": 0.46431495745976764,
+      "policy_improvement": -0.016671419143676758
+    },
+    {
+      "average_reward": 0.8576668500900269,
+      "average_value": 0.00041424602386541665,
+      "actor_loss": -0.0012255763867869973,
+      "value_loss": 0.9985532164573669,
+      "total_loss": 0.4644754429658254,
+      "policy_improvement": 0.012433528900146484
+    },
+    {
+      "average_reward": 0.8576668500900269,
+      "average_value": 0.0018222390208393335,
+      "actor_loss": -0.0009768527233973145,
+      "value_loss": 0.9985490441322327,
+      "total_loss": 0.4645826419194539,
+      "policy_improvement": 0.015532970428466797
     }
   ],
   "evaluation": {
-    "num_trajectories": 20,
-    "average_reward": 0.81810719368551,
-    "max_reward": 0.8591475921432804,
-    "min_reward": 0.7677297244047875,
-    "reward_std": 0.021988135179152785,
-    "successful_trajectories": 20,
-    "high_yield_trajectories": 20,
+    "num_trajectories": 100,
+    "average_reward": 0.812084619298523,
+    "max_reward": 0.8851056839189062,
+    "min_reward": 0.759130597867536,
+    "reward_std": 0.02189504287358024,
+    "successful_trajectories": 100,
+    "high_yield_trajectories": 100,
     "baseline_reward": 0.5,
-    "improvement": 63.621438737102
+    "improvement": 62.41692385970461
   }
 }
