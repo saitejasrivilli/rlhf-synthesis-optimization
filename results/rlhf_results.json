@@ -1,0 +1,46 @@
+{
+  "timestamp": "2026-05-10T03:30:40.414301",
+  "training_metrics": [
+    {
+      "average_reward": 0.8558842161075184,
+      "average_advantage": 1.1379786002407854e-16,
+      "policy_improvement": 1.1379786002407854e-16,
+      "policy_loss": -1.1379786002407854e-16,
+      "value_loss": 0.0038150127366450353,
+      "total_loss": 0.0018075063683224038
+    },
+    {
+      "average_reward": 0.8558842161075184,
+      "average_advantage": 1.1379786002407854e-16,
+      "policy_improvement": 1.1379786002407854e-16,
+      "policy_loss": -1.1379786002407854e-16,
+      "value_loss": 0.0038150127366450353,
+      "total_loss": 0.0018075063683224038
+    },
+    {
+      "average_reward": 0.8558842161075184,
+      "average_advantage": 1.1379786002407854e-16,
+      "policy_improvement": 1.1379786002407854e-16,
+      "policy_loss": -1.1379786002407854e-16,
+      "value_loss": 0.0038150127366450353,
+      "total_loss": 0.0018075063683224038
+    }
+  ],
+  "evaluation": {
+    "num_trajectories": 20,
+    "average_reward": 0.81810719368551,
+    "max_reward": 0.8591475921432804,
+    "min_reward": 0.7677297244047875,
+    "reward_std": 0.021988135179152785,
+    "successful_trajectories": 20,
+    "high_yield_trajectories": 20,
+    "baseline_reward": 0.5,
+    "improvement": 63.621438737102
+  },
+  "policy_summary": {
+    "base_model": "meta-llama/Llama-2-7b-hf",
+    "training_method": "PPO",
+    "trajectories_trained": 80,
+    "trajectories_tested": 20
+  }
+}
