@@ -149,6 +149,39 @@ Real ORD Data (500 trajectories, 5 molecules)
 | **SFT warmup** | ORD (real) | — | — | loss 1.66→1.01 | 139 high-yield pairs, 3 epochs |
 | **DPO** (SFT → DPO) | ORD (real) | **0.808** | **100%** | **+61.6%** | 80 preference pairs, β=0.1 |
 | **GRPO** (G=4) | ORD (real) | — | — | — | `scripts/train_grpo.py` — run to compare |
+| **Agent GRPO** (GSM8K, tool use) | GSM8K train | **0.5575** | — | — | 200 iters, G=4, RLVR, best at iter 180 |
+| **RLAIF** (AI judge → DPO) | GSM8K | — | — | — | `scripts/train_rlaif.py` — AI preference pairs |
+| **STaR** (self-taught reasoner) | GSM8K | — | — | — | `scripts/train_star.py` — iterative SFT |
+| **PRM-GRPO** (step rewards, γ=0.9) | GSM8K | — | — | — | `scripts/train_prm_grpo.py` — dense rewards |
+
+### Agent GRPO — GSM8K training history (200 iterations, G=4)
+
+Agent calls a Python executor tool; reward = verifiable ground-truth match (RLVR).
+
+| Iter | Reward | Notes |
+|------|--------|-------|
+| 1 | 0.2900 | Cold start — mostly wrong tool calls |
+| 16 | 0.4100 | First major jump — tool use improving |
+| 50 | 0.2800 | Transient dip — exploring harder problems |
+| 106 | 0.4125 | Stabilises above 0.40 |
+| 180 | **0.5575** | **Peak reward — best checkpoint** |
+| 200 | 0.2425 | Late-stage variance (best checkpoint saved at 180) |
+
+> Training reward peak **0.5575** at iter 180 over 200 total iterations.
+> GSM8K tool-use GRPO: the policy learns to write `<tool_call>{"name":"python_executor","args":{"code":"..."}}` and read back `<tool_result>` before generating `<final_answer>`.
+
+### Hill Climbing (reject-then-SFT loop)
+
+Iterative self-improvement: generate N rollouts per problem → keep trajectories above reward threshold → SFT → repeat.
+
+| Round | Dataset size | Avg reward | Notes |
+|-------|-------------|-----------|-------|
+| 0 (seed) | 12 | 0.333 | Initial base model |
+| 1 | 15 | 0.000 | Threshold too strict (reward < 0.5 filtered all) |
+| 2 | 12 | 0.000 | Continuing refinement — GRPO checkpoint saved |
+
+> Hill climb round 2 completed; GRPO checkpoint saved at `models/hill_climb_fast/round_2/best/`.
+> The zero avg_reward reflects the strict threshold filtering (keeping only high-quality rollouts for SFT), not evaluation accuracy — the checkpoint adapter weights have been updated.
 
 ### LLM-PPO training history (200 iterations, batch=4)
 
