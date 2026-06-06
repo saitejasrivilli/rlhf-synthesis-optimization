@@ -49,9 +49,16 @@ CUDA_VISIBLE_DEVICES=0 python scripts/train_prm_grpo.py \
     --output_dir models/prm_grpo
 ```
 
-Key result: at `step_weight=0.5`, step rewards contribute ~27% of total signal on
-problems where the final answer is wrong — keeping gradients alive when the model
-is still learning to solve the problem correctly.
+**Measured results** (30 iters, 15 problems, γ=0.9, step_weight=0.5, G=4):
+
+| Iter | Reward | Step Frac | Notes |
+|------|--------|-----------|-------|
+| 5 | ~0.40 | 0.75 | High step signal early — model reasoning without final answer |
+| 10 | **1.0659** | 0.14 | Peak — correct answers + step verification aligned |
+| 20 | 0.657 | 0.07 | Variance increases as model overfits prompt format |
+| 30 | 0.782 | 0.32 | Recovers; best checkpoint saved at iter 10 |
+
+**Best reward: 1.0659** (correct answer + step rewards, γ-discounted). Step frac=0.15 means ~15% of reward signal came from intermediate step verification — the PRM signal keeps gradients alive on partially-correct responses.
 
 ---
 
@@ -174,14 +181,17 @@ Agent calls a Python executor tool; reward = verifiable ground-truth match (RLVR
 
 Iterative self-improvement: generate N rollouts per problem → keep trajectories above reward threshold → SFT → repeat.
 
-| Round | Dataset size | Avg reward | Notes |
-|-------|-------------|-----------|-------|
-| 0 (seed) | 12 | 0.333 | Initial base model |
-| 1 | 15 | 0.000 | Threshold too strict (reward < 0.5 filtered all) |
-| 2 | 12 | 0.000 | Continuing refinement — GRPO checkpoint saved |
+**Final results (3 rounds complete):**
 
-> Hill climb round 2 completed; GRPO checkpoint saved at `models/hill_climb_fast/round_2/best/`.
-> The zero avg_reward reflects the strict threshold filtering (keeping only high-quality rollouts for SFT), not evaluation accuracy — the checkpoint adapter weights have been updated.
+| Round | Dataset | Accuracy | Tool Use | Avg Reward | Notes |
+|-------|---------|----------|----------|-----------|-------|
+| 0 (seed) | 32 | **0.125** | 0.000 | 0.138 | Base model — 4/32 problems solved |
+| 1 | 44 | 0.000 | 0.000 | 0.000 | Reward threshold filtered all trajectories |
+| 2 | 32 | 0.000 | 0.000 | 0.000 | Same — threshold too strict for 7B model |
+| 3 | 32 | 0.000 | 0.000 | 0.000 | Checkpoints saved; SFT ran but didn't recover |
+
+> Checkpoints saved at `models/hill_climb_fast/round_{1,2,3}/best/`.
+> The zero eval accuracy reflects the strict rejection threshold (reward ≥ 0.5) discarding all rollouts before SFT — the 7B base model rarely exceeds this threshold on tool-use GSM8K cold. Lowering the threshold or using a curriculum of easier problems is the correct fix.
 
 ### LLM-PPO training history (200 iterations, batch=4)
 

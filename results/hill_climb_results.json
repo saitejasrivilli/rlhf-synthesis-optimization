@@ -1,0 +1,30 @@
+[
+  {
+    "round": 0,
+    "accuracy": 0.125,
+    "tool_use": 0.0,
+    "avg_reward": 0.1375,
+    "dataset_size": 32
+  },
+  {
+    "round": 1,
+    "dataset_size": 44,
+    "accuracy": 0.0,
+    "tool_use": 0.0,
+    "avg_reward": 0.0
+  },
+  {
+    "round": 2,
+    "dataset_size": 32,
+    "accuracy": 0.0,
+    "tool_use": 0.0,
+    "avg_reward": 0.0
+  },
+  {
+    "round": 3,
+    "dataset_size": 32,
+    "accuracy": 0.0,
+    "tool_use": 0.0,
+    "avg_reward": 0.0
+  }
+]
