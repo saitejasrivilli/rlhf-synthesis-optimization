@@ -4,4 +4,4 @@ __pycache__/
 *.pyd
 .Python
 *.pt
-models/llm_policy/
+models/
