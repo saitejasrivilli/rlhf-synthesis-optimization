@@ -1,0 +1,671 @@
+{
+  "timestamp": "2026-06-06T02:03:48.228667",
+  "method": "DPO",
+  "model": "Qwen/Qwen2.5-7B-Instruct",
+  "sft_ckpt": "models/sft_policy/best",
+  "beta": 0.1,
+  "dataset": {
+    "total": 500,
+    "train": 400,
+    "test": 100,
+    "pairs": 80
+  },
+  "dpo_training": {
+    "best_reward_margin": 0.00034332275390625,
+    "num_epochs": 2,
+    "num_pairs": 80,
+    "history": [
+      {
+        "dpo_loss": 0.69287109375,
+        "reward_margin": 0.000152587890625,
+        "chosen_reward": 0.11456298828125,
+        "reject_reward": 0.114410400390625,
+        "epoch": 1,
+        "step": 0
+      },
+      {
+        "dpo_loss": 0.6943359375,
+        "reward_margin": -0.00244140625,
+        "chosen_reward": 0.121246337890625,
+        "reject_reward": 0.123687744140625,
+        "epoch": 1,
+        "step": 1
+      },
+      {
+        "dpo_loss": 0.693359375,
+        "reward_margin": -0.000457763671875,
+        "chosen_reward": 0.120635986328125,
+        "reject_reward": 0.12109375,
+        "epoch": 1,
+        "step": 2
+      },
+      {
+        "dpo_loss": 0.6962890625,
+        "reward_margin": -0.006134033203125,
+        "chosen_reward": 0.103973388671875,
+        "reject_reward": 0.110107421875,
+        "epoch": 1,
+        "step": 3
+      },
+      {
+        "dpo_loss": 0.6943359375,
+        "reward_margin": -0.001922607421875,
+        "chosen_reward": 0.11572265625,
+        "reject_reward": 0.117645263671875,
+        "epoch": 1,
+        "step": 4
+      },
+      {
+        "dpo_loss": 0.6962890625,
+        "reward_margin": -0.006317138671875,
+        "chosen_reward": 0.10943603515625,
+        "reject_reward": 0.115753173828125,
+        "epoch": 1,
+        "step": 5
+      },
+      {
+        "dpo_loss": 0.6923828125,
+        "reward_margin": 0.001312255859375,
+        "chosen_reward": 0.112701416015625,
+        "reject_reward": 0.11138916015625,
+        "epoch": 1,
+        "step": 6
+      },
+      {
+        "dpo_loss": 0.69287109375,
+        "reward_margin": 0.000335693359375,
+        "chosen_reward": 0.113525390625,
+        "reject_reward": 0.113189697265625,
+        "epoch": 1,
+        "step": 7
+      },
+      {
+        "dpo_loss": 0.693359375,
+        "reward_margin": -0.000457763671875,
+        "chosen_reward": 0.115966796875,
+        "reject_reward": 0.116424560546875,
+        "epoch": 1,
+        "step": 8
+      },
+      {
+        "dpo_loss": 0.693359375,
+        "reward_margin": -0.00030517578125,
+        "chosen_reward": 0.1124267578125,
+        "reject_reward": 0.11273193359375,
+        "epoch": 1,
+        "step": 9
+      },
+      {
+        "dpo_loss": 0.69287109375,
+        "reward_margin": 0.000732421875,
+        "chosen_reward": 0.116790771484375,
+        "reject_reward": 0.116058349609375,
+        "epoch": 1,
+        "step": 10
+      },
+      {
+        "dpo_loss": 0.6953125,
+        "reward_margin": -0.00396728515625,
+        "chosen_reward": 0.110931396484375,
+        "reject_reward": 0.114898681640625,
+        "epoch": 1,
+        "step": 11
+      },
+      {
+        "dpo_loss": 0.693359375,
+        "reward_margin": -0.00054931640625,
+        "chosen_reward": 0.1102294921875,
+        "reject_reward": 0.11077880859375,
+        "epoch": 1,
+        "step": 12
+      },
+      {
+        "dpo_loss": 0.69140625,
+        "reward_margin": 0.00347900390625,
+        "chosen_reward": 0.11279296875,
+        "reject_reward": 0.10931396484375,
+        "epoch": 1,
+        "step": 13
+      },
+      {
+        "dpo_loss": 0.693359375,
+        "reward_margin": -0.001068115234375,
+        "chosen_reward": 0.1103515625,
+        "reject_reward": 0.111419677734375,
+        "epoch": 1,
+        "step": 14
+      },
+      {
+        "dpo_loss": 0.69140625,
+        "reward_margin": 0.003631591796875,
+        "chosen_reward": 0.12347412109375,
+        "reject_reward": 0.119842529296875,
+        "epoch": 1,
+        "step": 15
+      },
+      {
+        "dpo_loss": 0.6943359375,
+        "reward_margin": -0.001953125,
+        "chosen_reward": 0.117919921875,
+        "reject_reward": 0.119873046875,
+        "epoch": 1,
+        "step": 16
+      },
+      {
+        "dpo_loss": 0.6943359375,
+        "reward_margin": -0.0029296875,
+        "chosen_reward": 0.1123046875,
+        "reject_reward": 0.115234375,
+        "epoch": 1,
+        "step": 17
+      },
+      {
+        "dpo_loss": 0.6943359375,
+        "reward_margin": -0.001708984375,
+        "chosen_reward": 0.108306884765625,
+        "reject_reward": 0.110015869140625,
+        "epoch": 1,
+        "step": 18
+      },
+      {
+        "dpo_loss": 0.69482421875,
+        "reward_margin": -0.00299072265625,
+        "chosen_reward": 0.118743896484375,
+        "reject_reward": 0.121734619140625,
+        "epoch": 1,
+        "step": 19
+      },
+      {
+        "dpo_loss": 0.69091796875,
+        "reward_margin": 0.004638671875,
+        "chosen_reward": 0.12353515625,
+        "reject_reward": 0.118896484375,
+        "epoch": 1,
+        "step": 20
+      },
+      {
+        "dpo_loss": 0.6923828125,
+        "reward_margin": 0.001983642578125,
+        "chosen_reward": 0.11090087890625,
+        "reject_reward": 0.108917236328125,
+        "epoch": 1,
+        "step": 21
+      },
+      {
+        "dpo_loss": 0.68994140625,
+        "reward_margin": 0.006683349609375,
+        "chosen_reward": 0.120147705078125,
+        "reject_reward": 0.11346435546875,
+        "epoch": 1,
+        "step": 22
+      },
+      {
+        "dpo_loss": 0.69482421875,
+        "reward_margin": -0.003265380859375,
+        "chosen_reward": 0.11297607421875,
+        "reject_reward": 0.116241455078125,
+        "epoch": 1,
+        "step": 23
+      },
+      {
+        "dpo_loss": 0.693359375,
+        "reward_margin": -0.000640869140625,
+        "chosen_reward": 0.10797119140625,
+        "reject_reward": 0.108612060546875,
+        "epoch": 1,
+        "step": 24
+      },
+      {
+        "dpo_loss": 0.6923828125,
+        "reward_margin": 0.002044677734375,
+        "chosen_reward": 0.115875244140625,
+        "reject_reward": 0.11383056640625,
+        "epoch": 1,
+        "step": 25
+      },
+      {
+        "dpo_loss": 0.69189453125,
+        "reward_margin": 0.002288818359375,
+        "chosen_reward": 0.11224365234375,
+        "reject_reward": 0.109954833984375,
+        "epoch": 1,
+        "step": 26
+      },
+      {
+        "dpo_loss": 0.6962890625,
+        "reward_margin": -0.005950927734375,
+        "chosen_reward": 0.11651611328125,
+        "reject_reward": 0.122467041015625,
+        "epoch": 1,
+        "step": 27
+      },
+      {
+        "dpo_loss": 0.6923828125,
+        "reward_margin": 0.001373291015625,
+        "chosen_reward": 0.110015869140625,
+        "reject_reward": 0.108642578125,
+        "epoch": 1,
+        "step": 28
+      },
+      {
+        "dpo_loss": 0.6943359375,
+        "reward_margin": -0.00177001953125,
+        "chosen_reward": 0.115509033203125,
+        "reject_reward": 0.117279052734375,
+        "epoch": 1,
+        "step": 29
+      },
+      {
+        "dpo_loss": 0.6943359375,
+        "reward_margin": -0.0023193359375,
+        "chosen_reward": 0.11651611328125,
+        "reject_reward": 0.11883544921875,
+        "epoch": 1,
+        "step": 30
+      },
+      {
+        "dpo_loss": 0.6923828125,
+        "reward_margin": 0.001800537109375,
+        "chosen_reward": 0.1126708984375,
+        "reject_reward": 0.110870361328125,
+        "epoch": 1,
+        "step": 31
+      },
+      {
+        "dpo_loss": 0.693359375,
+        "reward_margin": -0.0008544921875,
+        "chosen_reward": 0.112457275390625,
+        "reject_reward": 0.113311767578125,
+        "epoch": 1,
+        "step": 32
+      },
+      {
+        "dpo_loss": 0.6943359375,
+        "reward_margin": -0.0025634765625,
+        "chosen_reward": 0.10888671875,
+        "reject_reward": 0.1114501953125,
+        "epoch": 1,
+        "step": 33
+      },
+      {
+        "dpo_loss": 0.693359375,
+        "reward_margin": 0.000274658203125,
+        "chosen_reward": 0.108612060546875,
+        "reject_reward": 0.10833740234375,
+        "epoch": 1,
+        "step": 34
+      },
+      {
+        "dpo_loss": 0.69287109375,
+        "reward_margin": 0.000823974609375,
+        "chosen_reward": 0.11810302734375,
+        "reject_reward": 0.117279052734375,
+        "epoch": 1,
+        "step": 35
+      },
+      {
+        "dpo_loss": 0.69384765625,
+        "reward_margin": -0.0013427734375,
+        "chosen_reward": 0.112548828125,
+        "reject_reward": 0.1138916015625,
+        "epoch": 1,
+        "step": 36
+      },
+      {
+        "dpo_loss": 0.693359375,
+        "reward_margin": -0.000152587890625,
+        "chosen_reward": 0.115081787109375,
+        "reject_reward": 0.115234375,
+        "epoch": 1,
+        "step": 37
+      },
+      {
+        "dpo_loss": 0.693359375,
+        "reward_margin": 6.103515625e-05,
+        "chosen_reward": 0.119140625,
+        "reject_reward": 0.11907958984375,
+        "epoch": 1,
+        "step": 38
+      },
+      {
+        "dpo_loss": 0.6953125,
+        "reward_margin": -0.00433349609375,
+        "chosen_reward": 0.107147216796875,
+        "reject_reward": 0.111480712890625,
+        "epoch": 1,
+        "step": 39
+      },
+      {
+        "dpo_loss": 0.69384765625,
+        "reward_margin": -0.00103759765625,
+        "chosen_reward": 0.10858154296875,
+        "reject_reward": 0.109619140625,
+        "epoch": 2,
+        "step": 40
+      },
+      {
+        "dpo_loss": 0.693359375,
+        "reward_margin": -3.0517578125e-05,
+        "chosen_reward": 0.110504150390625,
+        "reject_reward": 0.11053466796875,
+        "epoch": 2,
+        "step": 41
+      },
+      {
+        "dpo_loss": 0.693359375,
+        "reward_margin": -0.000213623046875,
+        "chosen_reward": 0.114105224609375,
+        "reject_reward": 0.11431884765625,
+        "epoch": 2,
+        "step": 42
+      },
+      {
+        "dpo_loss": 0.6923828125,
+        "reward_margin": 0.001373291015625,
+        "chosen_reward": 0.113677978515625,
+        "reject_reward": 0.1123046875,
+        "epoch": 2,
+        "step": 43
+      },
+      {
+        "dpo_loss": 0.69140625,
+        "reward_margin": 0.003814697265625,
+        "chosen_reward": 0.11016845703125,
+        "reject_reward": 0.106353759765625,
+        "epoch": 2,
+        "step": 44
+      },
+      {
+        "dpo_loss": 0.693359375,
+        "reward_margin": 6.103515625e-05,
+        "chosen_reward": 0.1124267578125,
+        "reject_reward": 0.11236572265625,
+        "epoch": 2,
+        "step": 45
+      },
+      {
+        "dpo_loss": 0.69287109375,
+        "reward_margin": 0.000457763671875,
+        "chosen_reward": 0.1064453125,
+        "reject_reward": 0.105987548828125,
+        "epoch": 2,
+        "step": 46
+      },
+      {
+        "dpo_loss": 0.69091796875,
+        "reward_margin": 0.004302978515625,
+        "chosen_reward": 0.120513916015625,
+        "reject_reward": 0.1162109375,
+        "epoch": 2,
+        "step": 47
+      },
+      {
+        "dpo_loss": 0.69580078125,
+        "reward_margin": -0.00543212890625,
+        "chosen_reward": 0.11663818359375,
+        "reject_reward": 0.1220703125,
+        "epoch": 2,
+        "step": 48
+      },
+      {
+        "dpo_loss": 0.693359375,
+        "reward_margin": -0.001007080078125,
+        "chosen_reward": 0.110443115234375,
+        "reject_reward": 0.1114501953125,
+        "epoch": 2,
+        "step": 49
+      },
+      {
+        "dpo_loss": 0.69189453125,
+        "reward_margin": 0.002593994140625,
+        "chosen_reward": 0.11279296875,
+        "reject_reward": 0.110198974609375,
+        "epoch": 2,
+        "step": 50
+      },
+      {
+        "dpo_loss": 0.693359375,
+        "reward_margin": -0.00018310546875,
+        "chosen_reward": 0.11004638671875,
+        "reject_reward": 0.1102294921875,
+        "epoch": 2,
+        "step": 51
+      },
+      {
+        "dpo_loss": 0.69384765625,
+        "reward_margin": -0.0013427734375,
+        "chosen_reward": 0.104217529296875,
+        "reject_reward": 0.105560302734375,
+        "epoch": 2,
+        "step": 52
+      },
+      {
+        "dpo_loss": 0.693359375,
+        "reward_margin": -0.00079345703125,
+        "chosen_reward": 0.10833740234375,
+        "reject_reward": 0.109130859375,
+        "epoch": 2,
+        "step": 53
+      },
+      {
+        "dpo_loss": 0.69384765625,
+        "reward_margin": -0.001708984375,
+        "chosen_reward": 0.101715087890625,
+        "reject_reward": 0.103424072265625,
+        "epoch": 2,
+        "step": 54
+      },
+      {
+        "dpo_loss": 0.69140625,
+        "reward_margin": 0.003143310546875,
+        "chosen_reward": 0.1156005859375,
+        "reject_reward": 0.112457275390625,
+        "epoch": 2,
+        "step": 55
+      },
+      {
+        "dpo_loss": 0.69189453125,
+        "reward_margin": 0.00262451171875,
+        "chosen_reward": 0.11712646484375,
+        "reject_reward": 0.114501953125,
+        "epoch": 2,
+        "step": 56
+      },
+      {
+        "dpo_loss": 0.6943359375,
+        "reward_margin": -0.002471923828125,
+        "chosen_reward": 0.10919189453125,
+        "reject_reward": 0.111663818359375,
+        "epoch": 2,
+        "step": 57
+      },
+      {
+        "dpo_loss": 0.693359375,
+        "reward_margin": -0.0008544921875,
+        "chosen_reward": 0.100738525390625,
+        "reject_reward": 0.101593017578125,
+        "epoch": 2,
+        "step": 58
+      },
+      {
+        "dpo_loss": 0.6923828125,
+        "reward_margin": 0.002166748046875,
+        "chosen_reward": 0.10491943359375,
+        "reject_reward": 0.102752685546875,
+        "epoch": 2,
+        "step": 59
+      },
+      {
+        "dpo_loss": 0.69384765625,
+        "reward_margin": -0.0009765625,
+        "chosen_reward": 0.116943359375,
+        "reject_reward": 0.117919921875,
+        "epoch": 2,
+        "step": 60
+      },
+      {
+        "dpo_loss": 0.69140625,
+        "reward_margin": 0.003997802734375,
+        "chosen_reward": 0.111663818359375,
+        "reject_reward": 0.107666015625,
+        "epoch": 2,
+        "step": 61
+      },
+      {
+        "dpo_loss": 0.68896484375,
+        "reward_margin": 0.008148193359375,
+        "chosen_reward": 0.1158447265625,
+        "reject_reward": 0.107696533203125,
+        "epoch": 2,
+        "step": 62
+      },
+      {
+        "dpo_loss": 0.6953125,
+        "reward_margin": -0.0035400390625,
+        "chosen_reward": 0.097930908203125,
+        "reject_reward": 0.101470947265625,
+        "epoch": 2,
+        "step": 63
+      },
+      {
+        "dpo_loss": 0.69384765625,
+        "reward_margin": -0.001556396484375,
+        "chosen_reward": 0.096649169921875,
+        "reject_reward": 0.09820556640625,
+        "epoch": 2,
+        "step": 64
+      },
+      {
+        "dpo_loss": 0.693359375,
+        "reward_margin": -0.000213623046875,
+        "chosen_reward": 0.107452392578125,
+        "reject_reward": 0.107666015625,
+        "epoch": 2,
+        "step": 65
+      },
+      {
+        "dpo_loss": 0.693359375,
+        "reward_margin": -0.0010986328125,
+        "chosen_reward": 0.108306884765625,
+        "reject_reward": 0.109405517578125,
+        "epoch": 2,
+        "step": 66
+      },
+      {
+        "dpo_loss": 0.6943359375,
+        "reward_margin": -0.00262451171875,
+        "chosen_reward": 0.115966796875,
+        "reject_reward": 0.11859130859375,
+        "epoch": 2,
+        "step": 67
+      },
+      {
+        "dpo_loss": 0.6953125,
+        "reward_margin": -0.004058837890625,
+        "chosen_reward": 0.096435546875,
+        "reject_reward": 0.100494384765625,
+        "epoch": 2,
+        "step": 68
+      },
+      {
+        "dpo_loss": 0.6943359375,
+        "reward_margin": -0.00262451171875,
+        "chosen_reward": 0.102630615234375,
+        "reject_reward": 0.105255126953125,
+        "epoch": 2,
+        "step": 69
+      },
+      {
+        "dpo_loss": 0.6923828125,
+        "reward_margin": 0.00189208984375,
+        "chosen_reward": 0.118682861328125,
+        "reject_reward": 0.116790771484375,
+        "epoch": 2,
+        "step": 70
+      },
+      {
+        "dpo_loss": 0.689453125,
+        "reward_margin": 0.007568359375,
+        "chosen_reward": 0.10858154296875,
+        "reject_reward": 0.10101318359375,
+        "epoch": 2,
+        "step": 71
+      },
+      {
+        "dpo_loss": 0.6923828125,
+        "reward_margin": 0.00091552734375,
+        "chosen_reward": 0.104827880859375,
+        "reject_reward": 0.103912353515625,
+        "epoch": 2,
+        "step": 72
+      },
+      {
+        "dpo_loss": 0.69384765625,
+        "reward_margin": -0.00146484375,
+        "chosen_reward": 0.1070556640625,
+        "reject_reward": 0.1085205078125,
+        "epoch": 2,
+        "step": 73
+      },
+      {
+        "dpo_loss": 0.69287109375,
+        "reward_margin": 0.00054931640625,
+        "chosen_reward": 0.096343994140625,
+        "reject_reward": 0.095794677734375,
+        "epoch": 2,
+        "step": 74
+      },
+      {
+        "dpo_loss": 0.6904296875,
+        "reward_margin": 0.006072998046875,
+        "chosen_reward": 0.11224365234375,
+        "reject_reward": 0.106170654296875,
+        "epoch": 2,
+        "step": 75
+      },
+      {
+        "dpo_loss": 0.6943359375,
+        "reward_margin": -0.002227783203125,
+        "chosen_reward": 0.103515625,
+        "reject_reward": 0.105743408203125,
+        "epoch": 2,
+        "step": 76
+      },
+      {
+        "dpo_loss": 0.6943359375,
+        "reward_margin": -0.001800537109375,
+        "chosen_reward": 0.111724853515625,
+        "reject_reward": 0.113525390625,
+        "epoch": 2,
+        "step": 77
+      },
+      {
+        "dpo_loss": 0.693359375,
+        "reward_margin": -0.001007080078125,
+        "chosen_reward": 0.1083984375,
+        "reject_reward": 0.109405517578125,
+        "epoch": 2,
+        "step": 78
+      },
+      {
+        "dpo_loss": 0.69189453125,
+        "reward_margin": 0.0023193359375,
+        "chosen_reward": 0.106842041015625,
+        "reject_reward": 0.104522705078125,
+        "epoch": 2,
+        "step": 79
+      }
+    ]
+  },
+  "evaluation": {
+    "num_trajectories": 100,
+    "average_reward": 0.8079880769230771,
+    "max_reward": 0.8567230769230769,
+    "min_reward": 0.7739230769230769,
+    "reward_std": 0.015118150515191983,
+    "successful_trajectories": 100,
+    "high_yield_trajectories": 100,
+    "baseline_reward": 0.5,
+    "improvement": 61.59761538461541
+  }
+}

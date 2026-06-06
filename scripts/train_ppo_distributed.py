@@ -99,13 +99,20 @@ def parse_args():
     p.add_argument("--max_new_tokens",type=int,   default=128)
     p.add_argument("--temperature",   type=float, default=0.7)
     p.add_argument("--output_dir",    default="models/llm_policy")
-    p.add_argument("--data_file",     default="data/trajectories_improvable.jsonl")
+    p.add_argument("--data_file",     default="data/trajectories_improvable.jsonl",
+                   help="Training data. Use data/trajectories_real_ord.jsonl for real ORD data.")
     p.add_argument("--finetune_reward_model", action="store_true",
                    help="Fine-tune BERT reward model on trajectories before PPO")
+    p.add_argument("--use_preference_reward", action="store_true",
+                   help="Use Bradley-Terry preference reward model instead of rule-based")
     p.add_argument("--deepspeed",     default=None,
                    help="Path to DeepSpeed config JSON (enables DeepSpeed mode)")
     p.add_argument("--load_in_8bit",  action="store_true",
                    help="Load base model in 8-bit (saves ~7GB VRAM per GPU)")
+    p.add_argument("--use_wandb",     action="store_true",
+                   help="Enable Weights & Biases logging")
+    p.add_argument("--wandb_project", default="rlhf-synthesis",
+                   help="W&B project name")
     return p.parse_args()
 
 
@@ -116,11 +123,22 @@ def main():
 
     if rank == 0:
         initialize_directories()
+
+        if args.use_wandb:
+            import wandb
+            from datetime import datetime
+            wandb.init(
+                project=args.wandb_project,
+                name=f"ppo-{datetime.now().strftime('%m%d-%H%M')}",
+                config={k: v for k, v in vars(args).items() if v is not None},
+            )
+
         logger.info("=" * 70)
         logger.info("RLHF Synthesis Optimization — Distributed PPO")
         logger.info(f"  GPUs: {world_size}  |  Model: {args.model_name}")
         logger.info(f"  LoRA r={args.lora_r}, alpha={args.lora_alpha}")
         logger.info(f"  Iterations: {args.num_iterations}  |  Batch/GPU: {args.batch_size}")
+        logger.info(f"  Data: {args.data_file}")
         logger.info("=" * 70)
 
     # -----------------------------------------------------------------------
@@ -139,16 +157,28 @@ def main():
         logger.info(f"Dataset: {len(train_traj)} train | {len(test_traj)} test")
 
     # -----------------------------------------------------------------------
-    # Reward model — fine-tune on rank 0, broadcast weights
+    # Reward model
     # -----------------------------------------------------------------------
-    reward_model = LearnedRewardModel().to(device)
-
-    if args.finetune_reward_model and rank == 0:
-        logger.info("Fine-tuning BERT reward model on training trajectories…")
-        reward_model.finetune(train_traj, epochs=3, lr=1e-4, device=str(device))
-        reward_path = Path(args.output_dir) / "reward_model.pt"
-        reward_path.parent.mkdir(parents=True, exist_ok=True)
-        reward_model.save(str(reward_path))
+    if args.use_preference_reward:
+        from src.reward.preference_reward_model import (
+            PreferenceRewardModel, build_preference_pairs
+        )
+        reward_model = PreferenceRewardModel().to(device)
+        if rank == 0:
+            logger.info("Training Bradley-Terry preference reward model…")
+            pairs = build_preference_pairs(train_traj, pairs_per_molecule=20)
+            reward_model.fit(pairs, epochs=3, lr=2e-5, device=str(device))
+            reward_path = Path(args.output_dir) / "preference_reward_model.pt"
+            reward_path.parent.mkdir(parents=True, exist_ok=True)
+            reward_model.save(str(reward_path))
+    else:
+        reward_model = LearnedRewardModel().to(device)
+        if args.finetune_reward_model and rank == 0:
+            logger.info("Fine-tuning BERT reward model on training trajectories…")
+            reward_model.finetune(train_traj, epochs=3, lr=1e-4, device=str(device))
+            reward_path = Path(args.output_dir) / "reward_model.pt"
+            reward_path.parent.mkdir(parents=True, exist_ok=True)
+            reward_model.save(str(reward_path))
 
     if world_size > 1:
         dist.barrier()

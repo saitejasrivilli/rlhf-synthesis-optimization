@@ -6,6 +6,7 @@ PPO actor-critic: LLM backbone for policy, value head on final hidden state.
 import json
 import logging
 import re
+from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 import torch
@@ -216,11 +217,16 @@ class LLMSynthesisPolicy(nn.Module):
 
     @classmethod
     def from_pretrained(cls, path: str, base_model: str = "Qwen/Qwen2.5-7B-Instruct"):
-        from peft import PeftModel
-
+        """Load a saved LoRA checkpoint. LoRA weights remain trainable."""
         policy = cls(model_name=base_model)
-        policy.model = PeftModel.from_pretrained(policy.model.base_model.model, path)
-        policy.value_head.load_state_dict(
-            torch.load(f"{path}/value_head.pt", map_location="cpu")
-        )
+
+        # Load saved adapter weights into the already-attached LoRA modules
+        policy.model.load_adapter(path, adapter_name="default", is_trainable=True)
+
+        vh_path = f"{path}/value_head.pt"
+        if Path(vh_path).exists():
+            policy.value_head.load_state_dict(
+                torch.load(vh_path, map_location="cpu")
+            )
+        logger.info(f"Policy loaded from {path}")
         return policy

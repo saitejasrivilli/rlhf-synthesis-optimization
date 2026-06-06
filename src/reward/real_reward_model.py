@@ -11,24 +11,21 @@ class RealRewardModel:
         logger.info("Initialized real reward model")
     
     def score_trajectory(self, trajectory: Dict) -> float:
-        """Score based on: yield, selectivity, safety, efficiency"""
-        
-        # Yield reward (40% weight)
-        yield_score = trajectory.get("yield", 0.5)
-        yield_reward = yield_score * 0.40
-        
-        # Selectivity reward (30% weight)
-        selectivity_score = trajectory.get("selectivity", 0.5)
-        selectivity_reward = selectivity_score * 0.30
-        
-        # Safety reward (20% weight) - lower risk is better
-        safety_risk = trajectory.get("safety_risk", 0.5)
-        safety_reward = (1.0 - safety_risk) * 0.20
-        
-        # Efficiency reward (10% weight) - fewer steps is better
-        steps = trajectory.get("steps", 5)
-        efficiency_reward = (1.0 / (1.0 + steps / 10.0)) * 0.10
-        
+        """Score based on: yield, selectivity, safety, efficiency.
+        Handles both flat and nested (outcomes/parameters) trajectory formats.
+        """
+        out = trajectory.get("outcomes", {})
+
+        yield_score        = out.get("yield",        trajectory.get("yield",        0.5))
+        selectivity_score  = out.get("selectivity",  trajectory.get("selectivity",  0.5))
+        safety_risk        = out.get("safety_risk",  trajectory.get("safety_risk",  0.5))
+        steps              = out.get("steps",        trajectory.get("steps",        5))
+
+        yield_reward        = yield_score * 0.40
+        selectivity_reward  = selectivity_score * 0.30
+        safety_reward       = (1.0 - safety_risk) * 0.20
+        efficiency_reward   = (1.0 / (1.0 + steps / 10.0)) * 0.10
+
         total_reward = yield_reward + selectivity_reward + safety_reward + efficiency_reward
         return max(0.0, min(1.0, total_reward))
     

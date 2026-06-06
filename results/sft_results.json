@@ -1,0 +1,14 @@
+{
+  "model": "Qwen/Qwen2.5-7B-Instruct",
+  "data_file": "/storage/gxg8313/saiteja/rlhf-synthesis-optimization/data/trajectories_real_ord.jsonl",
+  "yield_threshold": 0.88,
+  "num_sft_pairs": 139,
+  "num_epochs": 3,
+  "loss_history": [
+    1.6629795244761876,
+    1.043309394802366,
+    1.0077595336096627
+  ],
+  "best_loss": 1.0077595336096627,
+  "checkpoint": "models/sft_policy/best"
+}

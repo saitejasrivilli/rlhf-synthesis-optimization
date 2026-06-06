@@ -87,11 +87,19 @@ class LLMPPOTrainer:
             + list(self.policy.value_head.parameters())
         )
         self.optimizer = torch.optim.Adam(trainable, lr=config.learning_rate)
-        self.scaler = torch.amp.GradScaler("cuda")
+        self.scaler    = torch.amp.GradScaler("cuda")
+
+        # W&B — log if a run is already initialised externally
+        try:
+            import wandb
+            self._wandb = wandb if wandb.run is not None else None
+        except ImportError:
+            self._wandb = None
 
         logger.info(
             f"LLMPPOTrainer | device={device} | lr={config.learning_rate} "
-            f"| clip={config.clip_ratio} | kl_weight={config.kl_div_weight}"
+            f"| clip={config.clip_ratio} | kl_weight={config.kl_div_weight} "
+            f"| wandb={'on' if self._wandb else 'off'}"
         )
 
     # ------------------------------------------------------------------
@@ -246,6 +254,20 @@ class LLMPPOTrainer:
             stats = self.train_step(batch)
             stats["iteration"] = i + 1
             history.append(stats)
+
+            if self._wandb and self.rank == 0:
+                self._wandb.log(
+                    {
+                        "reward_mean":  stats["reward_mean"],
+                        "reward_std":   stats["reward_std"],
+                        "loss_total":   stats["loss_total"],
+                        "loss_policy":  stats["loss_policy"],
+                        "loss_value":   stats["loss_value"],
+                        "kl":           stats["kl"],
+                        "entropy":      stats["entropy"],
+                    },
+                    step=i + 1,
+                )
 
             if self.rank == 0 and (i + 1) % self.config.log_interval == 0:
                 logger.info(
