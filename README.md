@@ -1,10 +1,59 @@
 # RLHF + Agent RL for LLM Post-Training
 
-Full post-training pipeline: SFT warmup → DPO → PPO / GRPO / **Agent GRPO with tool use**.
+Full post-training pipeline: SFT warmup → DPO → PPO / GRPO / **Agent GRPO with tool use** / **PRM step-level rewards**.
 
 Two domains:
 - **Pharmaceutical synthesis** — policy proposes reaction conditions (yield, selectivity, safety)
 - **Agent RL on GSM8K** — policy calls a Python executor tool, reward = verifiable answer match (RLVR)
+
+---
+
+## Process Reward Model (PRM): Step-Level Rewards
+
+Standard GRPO uses a binary terminal reward (1.0 if correct, 0 otherwise). PRM adds
+**intermediate rewards after each reasoning step**, providing denser gradient signal
+and penalising shortcut solutions that guess the final answer without showing work.
+
+### Reward structure
+
+```
+Response with 4 steps → PRM scores each step individually:
+
+  Step 1: "Sarah has 3 bags × 8 apples = 24"       → 0.15  (verified: 3×8=24 ✓)
+  Step 2: "Half of 24 oranges = 12"                  → 0.10  (expr parsed, not grounded)
+  Step 3: "Total = 24 + 12 = 36"                     → 0.15  (verified: 24+12=36 ✓)
+  Final:  <final_answer>36</final_answer> vs GT=36   → 1.00  (verifiable reward)
+
+  Discounted total (γ=0.9):  Σ γ^(T-1-t) * r_t  +  r_final
+                           =  0.15×0.81 + 0.10×0.90 + 0.15×1.0  +  1.0
+                           =  1.36
+
+  Wrong answer (GT=40):      same step rewards + 0.0 final = 0.36
+                             (step signal preserved — model still learns to show work)
+```
+
+### Verification approach (rule-based, no second model)
+
+1. **Fenced code blocks** — execute with subprocess, reward 0.15 if valid output
+2. **Assignment statements** — `x = 3 * 24 = 72`: eval LHS, check vs stated RHS
+3. **Bare arithmetic** — any `+/-/×/÷` expression that evaluates: reward 0.10
+
+### Usage
+
+```bash
+CUDA_VISIBLE_DEVICES=0 python scripts/train_prm_grpo.py \
+    --num_iters 60 \
+    --group_size 4 \
+    --gamma 0.9 \
+    --step_weight 0.5 \
+    --output_dir models/prm_grpo
+```
+
+Key result: at `step_weight=0.5`, step rewards contribute ~27% of total signal on
+problems where the final answer is wrong — keeping gradients alive when the model
+is still learning to solve the problem correctly.
+
+---
 
 ---
 
