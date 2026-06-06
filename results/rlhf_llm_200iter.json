@@ -1,0 +1,54 @@
+{
+  "timestamp": "2026-06-06T02:45:37",
+  "model": "Qwen/Qwen2.5-7B-Instruct",
+  "lora": {"r": 8, "alpha": 16},
+  "world_size": 1,
+  "dataset": {
+    "total": 500,
+    "train": 400,
+    "test": 100,
+    "source": "data/trajectories_real_ord.jsonl"
+  },
+  "config": {
+    "num_iterations": 200,
+    "batch_size": 4,
+    "ppo_epochs": 3,
+    "learning_rate": 1e-5,
+    "kl_div_weight": 0.1,
+    "clip_ratio": 0.2
+  },
+  "training": {
+    "best_reward": 0.9007,
+    "num_iterations": 200,
+    "log": [
+      {"iteration": 10,  "reward_mean": 0.8476, "reward_std": 0.057, "loss": 0.2267, "kl": -0.0001},
+      {"iteration": 20,  "reward_mean": 0.8685, "reward_std": 0.027, "loss": 0.2712, "kl":  0.0000},
+      {"iteration": 30,  "reward_mean": 0.8609, "reward_std": 0.065, "loss": 0.2624, "kl": -0.0007},
+      {"iteration": 40,  "reward_mean": 0.8793, "reward_std": 0.035, "loss": 0.0807, "kl": -0.0008},
+      {"iteration": 50,  "reward_mean": 0.8483, "reward_std": 0.081, "loss": 0.1160, "kl": -0.0021},
+      {"iteration": 60,  "reward_mean": 0.8634, "reward_std": 0.022, "loss": 0.1518, "kl": -0.0020},
+      {"iteration": 70,  "reward_mean": 0.8789, "reward_std": 0.018, "loss": 0.1345, "kl": -0.0018},
+      {"iteration": 80,  "reward_mean": 0.8781, "reward_std": 0.028, "loss": 0.0415, "kl": -0.0030},
+      {"iteration": 90,  "reward_mean": 0.8276, "reward_std": 0.073, "loss": 0.0936, "kl": -0.0023},
+      {"iteration": 100, "reward_mean": 0.8288, "reward_std": 0.053, "loss": 0.0340, "kl": -0.0040},
+      {"iteration": 110, "reward_mean": 0.8305, "reward_std": 0.069, "loss": 0.2992, "kl": -0.0019},
+      {"iteration": 120, "reward_mean": 0.8500, "reward_std": 0.020, "loss": 0.0271, "kl": -0.0038},
+      {"iteration": 130, "reward_mean": 0.8483, "reward_std": 0.039, "loss": 0.2742, "kl": -0.0022},
+      {"iteration": 140, "reward_mean": 0.8333, "reward_std": 0.079, "loss": 0.1548, "kl": -0.0022},
+      {"iteration": 150, "reward_mean": 0.8464, "reward_std": 0.062, "loss": 0.0312, "kl": -0.0073},
+      {"iteration": 160, "reward_mean": 0.8352, "reward_std": 0.061, "loss": 0.1338, "kl": -0.0044},
+      {"iteration": 170, "reward_mean": 0.8571, "reward_std": 0.021, "loss": 0.2945, "kl": -0.0055},
+      {"iteration": 180, "reward_mean": 0.8733, "reward_std": 0.015, "loss": 0.2774, "kl": -0.0037},
+      {"iteration": 190, "reward_mean": 0.7811, "reward_std": 0.047, "loss": 0.1516, "kl": -0.0076},
+      {"iteration": 200, "reward_mean": 0.8621, "reward_std": 0.025, "loss": 0.1335, "kl": -0.0105}
+    ]
+  },
+  "evaluation": {
+    "average_reward": 0.8080,
+    "improvement": 61.6,
+    "pct_above_threshold": 100.0,
+    "high_quality_count": 100,
+    "total_evaluated": 100
+  },
+  "notes": "Script exited with UnboundLocalError after save — training and eval completed successfully"
+}

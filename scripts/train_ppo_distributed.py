@@ -126,7 +126,6 @@ def main():
 
         if args.use_wandb:
             import wandb
-            from datetime import datetime
             wandb.init(
                 project=args.wandb_project,
                 name=f"ppo-{datetime.now().strftime('%m%d-%H%M')}",

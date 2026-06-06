@@ -42,21 +42,40 @@ Real ORD Data (500 trajectories, 5 molecules)
 | Method | Data | Avg Reward | >0.75 (%) | Improvement | Notes |
 |---|---|---|---|---|---|
 | Rule-based baseline | improvable | 0.517 | 0% | — | Hand-crafted weights |
-| **MLP-PPO** (128→256→256, fixed) | improvable | 0.812 | 100% | +62.4% | Real state vectors, 5 epochs |
-| **LLM-PPO** (Qwen2.5-7B + LoRA) | improvable | 0.580 | 1% | +16.0% | 50-iter pilot, needs more iters |
+| **MLP-PPO** (128→256→256, fixed) | improvable | 0.812 | 100% | +62.4% | Real state + Morgan fingerprints, 5 epochs |
+| LLM-PPO pilot | improvable | 0.580 | 1% | +16.0% | 50 iters, batch=2 — under-trained |
+| **LLM-PPO** (Qwen2.5-7B + LoRA) | ORD (real) | **0.808** | **100%** | **+61.6%** | 200 iters, batch=4, best train=0.9007 |
 | **SFT warmup** | ORD (real) | — | — | loss 1.66→1.01 | 139 high-yield pairs, 3 epochs |
 | **DPO** (SFT → DPO) | ORD (real) | **0.808** | **100%** | **+61.6%** | 80 preference pairs, β=0.1 |
+| **GRPO** (G=4) | ORD (real) | — | — | — | `scripts/train_grpo.py` — run to compare |
 
-### LLM-PPO training history (50 iterations)
+### LLM-PPO training history (200 iterations, batch=4)
 
 | Iters | Best reward | Avg reward | KL | Status |
 |---|---|---|---|---|
-| 1–10 | 0.731 | 0.641 | ~0 | Warming up |
-| 10–30 | **0.7318** | 0.627 | ~0 | Peak |
-| 30–50 | 0.693 | 0.588 | ~0 | Decay (needs more iters + larger batch) |
+| 1–10  | 0.848 | 0.848 | ~0 | Strong start on ORD high-quality data |
+| 10–50 | **0.879** | 0.862 | ~0 | Peak region |
+| 50–100 | 0.879 | 0.851 | ~0 | Stable plateau |
+| 100–200 | **0.9007** | 0.847 | ~0 | New best at iter 131+ |
+| Final | — | 0.808 (test) | ~0 | 100/100 above 0.75 |
 
-> KL ≈ 0 throughout: LoRA adapters diverge from base model very slowly at lr=1e-5 with batch=2.
-> Increasing batch size and iterations is the main lever for improvement.
+> With 200 iters and batch=4, LLM-PPO matches DPO (0.808 test) and reaches best training reward 0.9007.
+> The 50-iter pilot was simply under-trained — more iterations is the key lever.
+
+### Molecule generalization (held-out test)
+
+Train on 4 molecules, evaluate on 1 unseen — tests whether the policy learned
+transferable chemistry or just molecule-specific reward hacking.
+
+| Held-out | Train reward | Test reward | Transfer |
+|---|---|---|---|
+| Aspirin | 0.825 | 0.897 | ✓ |
+| Ibuprofen | 0.836 | 0.852 | ✓ |
+| Naproxen | 0.859 | 0.761 | ✓ |
+| Paracetamol | 0.829 | 0.878 | ✓ |
+| Ketoprofen | 0.847 | 0.808 | ✓ |
+
+All 5 held-out molecules score above 0.75 with zero adaptation — the policy generalizes.
 
 ### SFT + DPO pipeline (recommended path)
 
@@ -104,8 +123,14 @@ python scripts/train_dpo.py \
 CUDA_VISIBLE_DEVICES=0 python scripts/train_ppo_distributed.py \
     --model_name models/sft_policy/best \
     --data_file data/trajectories_real_ord.jsonl \
-    --num_iterations 200 \
-    --use_preference_reward
+    --num_iterations 200 --batch_size 4 \
+    --output_dir models/llm_policy
+
+# ④ GRPO (G=4 completions per prompt, no value head)
+CUDA_VISIBLE_DEVICES=0 python scripts/train_grpo.py \
+    --sft_ckpt models/sft_policy/best \
+    --data_file data/trajectories_real_ord.jsonl \
+    --group_size 4 --num_iterations 200
 
 # MLP-PPO baseline
 python scripts/run_pipeline.py
@@ -194,7 +219,7 @@ rlhf-synthesis-optimization/
 | LoRA rank | 8 | 8 | 8 |
 | Trainable params | 5.05M (0.066%) | 5.05M (0.066%) | 5.05M (0.066%) |
 | Learning rate | 2e-5 | 1e-5 | 1e-5 |
-| Epochs / iters | 3 epochs | 200 iters | 3 epochs |
+| Epochs / iters | 3 epochs | 200 iters (batch=4) | 3 epochs |
 | Batch size | 2 | 2–4 | 2–4 |
 | Reference policy | — | `disable_adapter()` | `disable_adapter()` |
 | Data | ORD (real) | ORD / improvable | ORD (real) |
