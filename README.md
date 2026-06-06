@@ -56,19 +56,6 @@ CUDA_VISIBLE_DEVICES=0 python scripts/train_agent_grpo.py \
 python scripts/train_agent_grpo.py --use_wandb --wandb_project rlhf-synthesis
 ```
 
-### Tests (30 pass, no GPU needed)
-
-```bash
-pytest tests/test_tools.py tests/test_agent_grpo.py -v
-```
-
-| Test group | Coverage |
-|---|---|
-| `python_executor` (7 tests) | basic arithmetic, multiline, imports, syntax error, runtime error, timeout, output truncation |
-| `tool_parser` (6 tests) | tool call extraction, final answer, think tag, full trajectory, invalid JSON, no tags |
-| `verifiable_reward` (10 tests) | normalize ($, %, float/int), extract answer (tagged + fallback), reward (correct, partial, wrong), format reward |
-| `build_agent_prompt` (1 test) | contains problem + tool name + answer tag |
-
 ---
 
 ## Pipeline
