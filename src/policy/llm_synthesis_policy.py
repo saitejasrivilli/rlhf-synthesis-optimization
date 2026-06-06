@@ -9,6 +9,8 @@ import re
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
+import torch.nn.functional as F
+
 import torch
 import torch.nn as nn
 from transformers import AutoModelForCausalLM, AutoTokenizer
@@ -90,6 +92,10 @@ class LLMSynthesisPolicy(nn.Module):
                 bias="none",
             )
             self.model = get_peft_model(base, lora_cfg)
+            # Gradient checkpointing: recompute activations on backward instead of storing
+            # them — trades ~30% speed for ~60% activation memory reduction.
+            self.model.enable_input_require_grads()
+            self.model.gradient_checkpointing_enable()
             self.model.print_trainable_parameters()
             logger.info(f"Loaded {model_name} with LoRA r={lora_r}")
         except ImportError:
@@ -191,6 +197,35 @@ class LLMSynthesisPolicy(nn.Module):
         values = self.value_head(last_hidden)    # [B]
 
         return response_lp, values
+
+    def get_logprobs(
+        self,
+        query_ids: torch.Tensor,
+        response_ids: torch.Tensor,
+    ) -> torch.Tensor:
+        """Log-probs over response tokens only — no value head, no hidden states.
+
+        Use this from GRPO (no critic) to avoid storing 32-layer activations.
+        Returns response_logprobs: [B, R]
+        """
+        full_ids  = torch.cat([query_ids, response_ids], dim=1)
+        attn_mask = (full_ids != self.tokenizer.pad_token_id).long()
+
+        out = self.model(input_ids=full_ids, attention_mask=attn_mask)
+
+        # F.cross_entropy never materialises the full [B, T, V] softmax tensor —
+        # much cheaper than log_softmax + gather for large vocabularies (Qwen: 152k tokens).
+        logits = out.logits[:, :-1, :].float()       # [B, T-1, V]
+        labels = full_ids[:, 1:]                      # [B, T-1]
+        B, T = labels.shape
+        token_lp = -F.cross_entropy(
+            logits.reshape(B * T, -1),
+            labels.reshape(B * T),
+            reduction="none",
+        ).reshape(B, T)                               # [B, T-1]
+
+        q_len = query_ids.shape[1]
+        return token_lp[:, q_len - 1:]
 
     # ------------------------------------------------------------------
     # Decoding

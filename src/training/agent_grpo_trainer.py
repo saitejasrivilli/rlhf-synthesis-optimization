@@ -37,7 +37,7 @@ from ..reward.verifiable_reward import compute_reward, format_reward
 logger = logging.getLogger(__name__)
 
 MAX_TOOL_TURNS   = 3     # max tool calls per trajectory before forced stop
-MAX_CONTEXT_LEN  = 512   # token budget per rollout
+MAX_CONTEXT_LEN  = 256   # token budget per rollout (keep low to avoid OOM on log-prob pass)
 
 
 SYSTEM_PROMPT = (
@@ -154,7 +154,7 @@ def _segment_logprobs(
         padding=False,
     ).to(next(policy.model.parameters()).device)
 
-    lp, _ = policy.get_logprobs_and_values(enc_q["input_ids"], enc_r["input_ids"])
+    lp = policy.get_logprobs(enc_q["input_ids"], enc_r["input_ids"])
     return lp.mean()   # scalar
 
 
