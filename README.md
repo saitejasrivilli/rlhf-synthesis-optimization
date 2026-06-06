@@ -1,8 +1,73 @@
-# RLHF + PPO for Pharmaceutical Synthesis Optimization
+# RLHF + Agent RL for LLM Post-Training
 
-Full RLHF pipeline: SFT warmup → preference reward model → PPO / DPO.
-The policy learns to propose reaction parameters (temperature, time, catalyst, solvent)
-that maximize yield while controlling safety risk.
+Full post-training pipeline: SFT warmup → DPO → PPO / GRPO / **Agent GRPO with tool use**.
+
+Two domains:
+- **Pharmaceutical synthesis** — policy proposes reaction conditions (yield, selectivity, safety)
+- **Agent RL on GSM8K** — policy calls a Python executor tool, reward = verifiable answer match (RLVR)
+
+---
+
+## Agent RL with Verifiable Rewards (new)
+
+The core new addition: training an LLM agent with GRPO where reward comes from
+**verifiable outcomes** (ground truth match), not a learned reward model.
+
+### Architecture
+
+```
+Problem: "Janet earns $25/hr. She works 52 hrs/week. How much does she earn in 4 weeks?"
+
+Model turn 1 (generate):
+  <think>I'll compute 25 * 52 * 4 in Python</think>
+  <tool_call>{"name": "python_executor", "args": {"code": "25 * 52 * 4"}}</tool_call>
+
+Tool execution (injected, not part of policy gradient):
+  <tool_result>5200</tool_result>
+
+Model turn 2 (generate, conditioned on full context):
+  <final_answer>5200</final_answer>
+
+Reward: compute_reward(output, "5200") → 1.0  ← verifiable, no learned RM
+```
+
+### GRPO update
+
+For each problem, generate G=4 trajectories → compute group-relative advantages:
+```
+advantages_i = (reward_i - mean(rewards)) / (std(rewards) + 1e-8)
+```
+Log-probs computed per-segment, each conditioned on the full context including
+injected tool results — not on a naive concatenation that would ignore tool outputs.
+
+### Usage
+
+```bash
+# Download dataset (7,473 GSM8K math problems)
+python data/create_gsm8k_tool_dataset.py
+
+# Train
+CUDA_VISIBLE_DEVICES=0 python scripts/train_agent_grpo.py \
+    --data_file data/gsm8k_train_tool_dataset.jsonl \
+    --num_iterations 200 \
+    --group_size 4
+
+# With W&B
+python scripts/train_agent_grpo.py --use_wandb --wandb_project rlhf-synthesis
+```
+
+### Tests (30 pass, no GPU needed)
+
+```bash
+pytest tests/test_tools.py tests/test_agent_grpo.py -v
+```
+
+| Test group | Coverage |
+|---|---|
+| `python_executor` (7 tests) | basic arithmetic, multiline, imports, syntax error, runtime error, timeout, output truncation |
+| `tool_parser` (6 tests) | tool call extraction, final answer, think tag, full trajectory, invalid JSON, no tags |
+| `verifiable_reward` (10 tests) | normalize ($, %, float/int), extract answer (tagged + fallback), reward (correct, partial, wrong), format reward |
+| `build_agent_prompt` (1 test) | contains problem + tool name + answer tag |
 
 ---
 
