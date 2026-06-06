@@ -1,10 +1,38 @@
 {
-  "timestamp": "2026-05-10T15:38:03.352651",
-  "evaluation": {
-    "average_reward": 0.8121,
-    "improvement": 62.4,
-    "test_cases": 100,
-    "successful": 100
+  "timestamp": "2026-06-06T01:33:48.445403",
+  "dataset": {
+    "total_trajectories": 500,
+    "train_size": 400,
+    "test_size": 100,
+    "expansion": "500 trajectories (5x original)"
   },
-  "status": "complete"
+  "training_metrics": {
+    "epoch_rewards": [
+      0.8576667944776706,
+      0.8576667944776706,
+      0.8576667944776706,
+      0.8576667944776706,
+      0.8576667944776706
+    ],
+    "epoch_losses": [
+      2.8355356240272522,
+      0.7017989861220122,
+      0.005924213563557715,
+      0.0016902203729841857,
+      0.000951534160412848
+    ],
+    "final_reward": 0.8576667944776706,
+    "improvement": 71.53335889553412
+  },
+  "evaluation": {
+    "num_trajectories": 100,
+    "average_reward": 0.8120846192985227,
+    "max_reward": 0.8851056839189062,
+    "min_reward": 0.759130597867536,
+    "reward_std": 0.021895042873580243,
+    "successful_trajectories": 100,
+    "high_yield_trajectories": 100,
+    "baseline_reward": 0.5,
+    "improvement": 62.41692385970454
+  }
 }

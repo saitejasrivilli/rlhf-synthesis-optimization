@@ -32,6 +32,9 @@ class RealRewardModel:
         total_reward = yield_reward + selectivity_reward + safety_reward + efficiency_reward
         return max(0.0, min(1.0, total_reward))
     
+    def compute_reward(self, trajectory: Dict) -> float:
+        return self.score_trajectory(trajectory)
+
     def score_batch(self, trajectories: List[Dict]) -> List[float]:
         """Score multiple trajectories"""
         return [self.score_trajectory(traj) for traj in trajectories]

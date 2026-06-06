@@ -1,0 +1,76 @@
+# Ray cluster configuration for distributed RLHF synthesis training.
+#
+# Single-node, 4x A30 GPU setup.
+# Each actor handles one GPU; the head node coordinates PPO updates.
+#
+# Start cluster:
+#   ray start --head --num-gpus=4 --num-cpus=32 --object-store-memory=20000000000
+#
+# Submit job:
+#   ray job submit --address=http://127.0.0.1:8265 \
+#     --runtime-env-json='{"working_dir": "."}' \
+#     -- python scripts/train_ppo_ray.py
+
+cluster_name: rlhf-synthesis
+
+# -----------------------------------------------------------------------
+# Head node
+# -----------------------------------------------------------------------
+head_node_type:
+  node_config:
+    InstanceType: local          # single-machine setup
+  resources:
+    CPU: 32
+    GPU: 4
+    memory: 128000000000         # 128 GB RAM
+  docker:
+    image: null                  # use local environment
+
+# -----------------------------------------------------------------------
+# Worker nodes (scale out to multi-node here if needed)
+# -----------------------------------------------------------------------
+worker_node_types:
+  - name: gpu_worker
+    node_config:
+      InstanceType: local
+    resources:
+      CPU: 8
+      GPU: 1
+      memory: 32000000000
+    min_workers: 0
+    max_workers: 0               # set > 0 for multi-node
+
+# -----------------------------------------------------------------------
+# Runtime environment
+# -----------------------------------------------------------------------
+runtime_env:
+  pip:
+    - torch>=2.1.0
+    - transformers>=4.38.0
+    - peft>=0.9.0
+    - accelerate>=0.27.0
+    - trl>=0.8.0
+    - deepspeed>=0.13.0
+    - ray[default]>=2.9.0
+  env_vars:
+    TOKENIZERS_PARALLELISM: "false"
+    NCCL_DEBUG: "WARN"
+
+# -----------------------------------------------------------------------
+# Ray actor placement (one actor per GPU)
+# -----------------------------------------------------------------------
+ray_actor_options:
+  num_gpus: 1
+  num_cpus: 8
+  memory: 32000000000
+
+# -----------------------------------------------------------------------
+# Logging and monitoring
+# -----------------------------------------------------------------------
+logging:
+  log_to_driver: true
+  log_style: record            # structured JSON logs
+
+dashboard:
+  host: 0.0.0.0
+  port: 8265

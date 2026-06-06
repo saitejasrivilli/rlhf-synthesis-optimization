@@ -1,33 +1,72 @@
 {
   "data": {
-    "synthesis_trajectories": 100,
+    "synthesis_trajectories": 500,
     "train_val_split": 0.8,
-    "trajectory_length": 5
+    "trajectory_length": 5,
+    "primary_dataset": "data/trajectories_improvable.jsonl",
+    "labeled_dataset": "data/labeled/trajectories_expanded.jsonl"
   },
   "reward_model": {
+    "type": "learned",
     "backbone": "bert-base-uncased",
     "hidden_dim": 768,
     "dropout": 0.1,
-    "learning_rate": 1e-4
+    "learning_rate": 1e-4,
+    "finetune_epochs": 3,
+    "rule_weights": {
+      "yield": 0.40,
+      "selectivity": 0.30,
+      "safety": 0.20,
+      "efficiency": 0.10
+    }
   },
   "policy": {
-    "base_model": "meta-llama/Llama-2-7b-hf",
+    "type": "llm",
+    "base_model": "Qwen/Qwen2.5-7B-Instruct",
     "method": "lora",
     "lora_r": 8,
     "lora_alpha": 16,
-    "max_seq_length": 512
+    "lora_dropout": 0.05,
+    "lora_target_modules": ["q_proj", "k_proj", "v_proj", "o_proj"],
+    "load_in_8bit": false,
+    "max_new_tokens": 128,
+    "generation_temperature": 0.7
+  },
+  "mlp_baseline": {
+    "state_dim": 128,
+    "action_dim": 32,
+    "hidden_dim": 256,
+    "learning_rate": 1e-4
   },
   "rlhf_training": {
-    "ppo_epochs": 3,
+    "num_iterations": 200,
     "batch_size": 4,
+    "ppo_epochs": 3,
+    "gradient_accumulation_steps": 4,
     "learning_rate": 1e-5,
     "clip_ratio": 0.2,
     "value_coef": 0.5,
     "entropy_coef": 0.01,
-    "kl_div_weight": 0.1
+    "kl_div_weight": 0.1,
+    "max_grad_norm": 1.0,
+    "log_interval": 10,
+    "save_interval": 50
+  },
+  "distributed": {
+    "num_gpus": 4,
+    "gpu_type": "A30",
+    "vram_per_gpu_gb": 24,
+    "backend": "nccl",
+    "deepspeed_config": "configs/deepspeed_zero2.json"
   },
   "evaluation": {
-    "test_trajectories": 20,
-    "metrics": ["average_reward", "kl_divergence", "policy_improvement"]
+    "test_split": 0.2,
+    "metrics": [
+      "average_reward",
+      "reward_std",
+      "pct_above_0.6",
+      "pct_above_0.75",
+      "improvement_vs_baseline"
+    ]
   }
 }

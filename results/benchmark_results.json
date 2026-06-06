@@ -1,0 +1,31 @@
+{
+  "Rule-based baseline": {
+    "mean": 0.5167,
+    "std": 0.0,
+    "max": 0.5167,
+    "min": 0.5167,
+    "pct_above_0.6": 0.0,
+    "pct_above_0.75": 0.0,
+    "improvement_pct": 3.33
+  },
+  "MLP-PPO (128\u2192256\u2192256)": {
+    "mean": 0.5167,
+    "std": 0.0,
+    "max": 0.5167,
+    "min": 0.5167,
+    "pct_above_0.6": 0.0,
+    "pct_above_0.75": 0.0,
+    "improvement_pct": 3.33,
+    "train_time_s": 1.2
+  },
+  "LLM-PPO (Llama-2-7B + LoRA r=8)": {
+    "mean": 0.6011,
+    "std": 0.0724,
+    "max": 0.8494,
+    "min": 0.5167,
+    "pct_above_0.6": 33.0,
+    "pct_above_0.75": 6.0,
+    "improvement_pct": 20.22,
+    "train_time_s": 0.0
+  }
+}
