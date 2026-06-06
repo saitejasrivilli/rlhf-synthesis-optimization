@@ -137,14 +137,18 @@ class LLMSynthesisPolicy(nn.Module):
             max_length=512,
         ).to(self.model.device)
 
-        out = self.model.generate(
-            **enc,
+        gen_kwargs = dict(
             max_new_tokens=max_new_tokens,
-            temperature=temperature,
-            do_sample=True,
             pad_token_id=self.tokenizer.pad_token_id,
             eos_token_id=self.tokenizer.eos_token_id,
         )
+        if temperature > 0:
+            gen_kwargs["temperature"] = temperature
+            gen_kwargs["do_sample"] = True
+        else:
+            gen_kwargs["do_sample"] = False
+
+        out = self.model.generate(**enc, **gen_kwargs)
         query_ids = enc["input_ids"]
         response_ids = out[:, query_ids.shape[1]:]
         return query_ids, response_ids
