@@ -1,0 +1,73 @@
+{
+  "timestamp": "2026-06-06T02:20:35.016531",
+  "experiment": "molecule_generalization",
+  "held_out_molecules": [
+    "Aspirin",
+    "Ibuprofen",
+    "Naproxen",
+    "Paracetamol",
+    "Ketoprofen"
+  ],
+  "results": [
+    {
+      "held_out": "Aspirin",
+      "n_train": 400,
+      "n_test": 100,
+      "mlp_ppo": {
+        "method": "MLP-PPO",
+        "train_reward": 0.8248230838775634,
+        "test_reward": 0.8965930769230771,
+        "improvement": -8.004745306682379,
+        "n_test": 100
+      }
+    },
+    {
+      "held_out": "Ibuprofen",
+      "n_train": 400,
+      "n_test": 100,
+      "mlp_ppo": {
+        "method": "MLP-PPO",
+        "train_reward": 0.8360318326950074,
+        "test_reward": 0.851758076923077,
+        "improvement": -1.8463275511571307,
+        "n_test": 100
+      }
+    },
+    {
+      "held_out": "Naproxen",
+      "n_train": 400,
+      "n_test": 100,
+      "mlp_ppo": {
+        "method": "MLP-PPO",
+        "train_reward": 0.858636827468872,
+        "test_reward": 0.761338076923077,
+        "improvement": 12.779966248506597,
+        "n_test": 100
+      }
+    },
+    {
+      "held_out": "Paracetamol",
+      "n_train": 400,
+      "n_test": 100,
+      "mlp_ppo": {
+        "method": "MLP-PPO",
+        "train_reward": 0.8294193315505981,
+        "test_reward": 0.878208076923077,
+        "improvement": -5.555488055617546,
+        "n_test": 100
+      }
+    },
+    {
+      "held_out": "Ketoprofen",
+      "n_train": 400,
+      "n_test": 100,
+      "mlp_ppo": {
+        "method": "MLP-PPO",
+        "train_reward": 0.8469743251800537,
+        "test_reward": 0.8079880769230771,
+        "improvement": 4.825101865726915,
+        "n_test": 100
+      }
+    }
+  ]
+}

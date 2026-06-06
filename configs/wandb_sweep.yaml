@@ -1,0 +1,50 @@
+program: scripts/train_dpo.py
+method: bayes
+metric:
+  goal: maximize
+  name: test_avg_reward
+
+parameters:
+  # DPO KL coefficient
+  beta:
+    distribution: log_uniform_values
+    min: 0.01
+    max: 0.5
+
+  # Optimizer
+  learning_rate:
+    distribution: log_uniform_values
+    min: 1.0e-6
+    max: 1.0e-4
+
+  # Training length
+  num_epochs:
+    values: [2, 3, 5]
+
+  # Batch size
+  batch_size:
+    values: [2, 4]
+
+  # Preference pairs per molecule
+  pairs_per_mol:
+    values: [10, 20, 40]
+
+# Fixed (not swept)
+command:
+  - ${env}
+  - ${interpreter}
+  - ${program}
+  - --data_file
+  - data/trajectories_real_ord.jsonl
+  - --sft_ckpt
+  - models/sft_policy/best
+  - --use_wandb
+  - --wandb_project
+  - rlhf-synthesis-sweep
+  - ${args}
+
+# Run sweep:
+#   wandb sweep configs/wandb_sweep.yaml
+#   wandb agent <sweep-id>  (runs one trial)
+#   # or for N parallel trials:
+#   for i in $(seq 1 4); do wandb agent <sweep-id> &; done

@@ -193,15 +193,21 @@ class LLMSynthesisPolicy(nn.Module):
     # ------------------------------------------------------------------
 
     def decode_conditions(self, response_ids: torch.Tensor) -> List[Dict]:
-        """Parse generated tokens into synthesis condition dicts."""
+        """
+        Parse generated tokens into synthesis condition dicts.
+        Clips out-of-range values to chemically feasible bounds.
+        """
+        from src.utils.reaction_constraints import validate_conditions
+
         texts = self.tokenizer.batch_decode(response_ids, skip_special_tokens=True)
         conditions = []
         for text in texts:
             try:
                 m = re.search(r"\{[^}]+\}", text, re.DOTALL)
-                cond = json.loads(m.group()) if m else _FALLBACK_CONDITIONS.copy()
+                raw = json.loads(m.group()) if m else _FALLBACK_CONDITIONS.copy()
             except (json.JSONDecodeError, AttributeError):
-                cond = _FALLBACK_CONDITIONS.copy()
+                raw = _FALLBACK_CONDITIONS.copy()
+            cond, _ = validate_conditions(raw)
             conditions.append(cond)
         return conditions
 

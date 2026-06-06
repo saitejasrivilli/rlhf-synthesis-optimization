@@ -8,12 +8,56 @@ from typing import Dict, List, Tuple
 logger = logging.getLogger(__name__)
 
 
+_MOLECULE_SMILES = {
+    "Aspirin":     "CC(=O)Oc1ccccc1C(=O)O",
+    "Ibuprofen":   "CC(C)Cc1ccc(C(C)C(=O)O)cc1",
+    "Naproxen":    "COc1ccc2cc(C(C)C(=O)O)ccc2c1",
+    "Paracetamol": "CC(=O)Nc1ccc(O)cc1",
+    "Ketoprofen":  "CC(C(=O)O)c1ccc(cc1)C(=O)c1ccccc1",
+}
+
+_FINGERPRINT_CACHE: dict = {}
+
+
+def _molecule_fingerprint(molecule_name: str, n_bits: int = 100) -> list:
+    """
+    Return a 100-bit Morgan fingerprint (radius=2) for the molecule.
+    Falls back to zeros if rdkit is unavailable or the molecule is unknown.
+    """
+    if molecule_name in _FINGERPRINT_CACHE:
+        return _FINGERPRINT_CACHE[molecule_name]
+
+    smiles = _MOLECULE_SMILES.get(molecule_name)
+    if smiles is None:
+        _FINGERPRINT_CACHE[molecule_name] = [0.0] * n_bits
+        return _FINGERPRINT_CACHE[molecule_name]
+
+    try:
+        from rdkit import Chem
+        from rdkit.Chem import AllChem
+        mol = Chem.MolFromSmiles(smiles)
+        if mol is None:
+            raise ValueError("Invalid SMILES")
+        fp = AllChem.GetMorganFingerprintAsBitVect(mol, radius=2, nBits=n_bits)
+        bits = list(fp.ToBitString())
+        result = [float(b) for b in bits]
+    except Exception:
+        result = [0.0] * n_bits
+
+    _FINGERPRINT_CACHE[molecule_name] = result
+    return result
+
+
 def encode_trajectory(traj: Dict) -> torch.Tensor:
     """
     Encode a trajectory into a 128-dim state vector.
 
-    First 8 dims are normalized chemistry features; remaining 120 are zero-padding
-    for future molecular fingerprint extension.
+    Layout:
+      [0:8]   — 8 normalized chemistry features (temp, time, catalyst, solvent,
+                  yield, selectivity, safety, steps)
+      [8:108] — 100-bit Morgan fingerprint (radius=2) of the molecule
+                 (zeros when rdkit unavailable or molecule unknown)
+      [108:128] — reserved / zero-padded
     """
     params   = traj.get("parameters", traj)
     outcomes = traj.get("outcomes", {})
@@ -38,8 +82,12 @@ def encode_trajectory(traj: Dict) -> torch.Tensor:
         float(steps)       / 10.0,
     ]
 
+    molecule = traj.get("molecule", "")
+    fp_bits  = _molecule_fingerprint(molecule, n_bits=100)
+
     state = torch.zeros(128, dtype=torch.float32)
-    state[:len(features)] = torch.tensor(features, dtype=torch.float32)
+    state[:8]    = torch.tensor(features, dtype=torch.float32)
+    state[8:108] = torch.tensor(fp_bits,  dtype=torch.float32)
     return state
 
 
