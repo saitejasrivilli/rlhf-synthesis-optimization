@@ -114,6 +114,61 @@ python scripts/train_agent_grpo.py --use_wandb --wandb_project rlhf-synthesis
 
 ---
 
+## RLAIF: Pairwise LLM Judge for DPO Data (`scripts/run_rlaif.py`)
+
+Uses an LLM judge to compare candidate responses and generate preference pairs for DPO — no human annotators required. Scales to any prompt set.
+
+### Algorithm
+
+```
+for each prompt:
+  generate K candidate responses (policy with temperature diversity)
+  for each pair (A, B):
+    judge → "Winner: A — response A is more specific and structured"
+    collect (prompt, chosen=A, rejected=B)
+→ write DPO JSONL: {prompt, chosen, rejected, judge_reason}
+```
+
+### Demo results (rule-based generator + judge, 10 prompts, K=4)
+
+```bash
+python scripts/run_rlaif.py --mode demo --n_prompts 10 --candidates 4
+```
+
+| Metric | Value |
+|--------|-------|
+| Prompts | 10 |
+| Candidates/prompt | 4 |
+| Pairwise comparisons | 60 |
+| DPO pairs generated | 60 (6.0/prompt) |
+| Chosen avg length | 312 chars |
+| Rejected avg length | 194 chars |
+| Length gap (chosen longer) | +118 chars |
+
+### With a real model
+
+```bash
+python scripts/run_rlaif.py \
+    --mode hf \
+    --model Qwen/Qwen2.5-7B-Instruct \
+    --n_prompts 1000 \
+    --candidates 4 \
+    --output_dir output/rlaif_qwen
+```
+
+Output feeds directly into DPO training: `(prompt, chosen, rejected, judge_reason)`.
+
+### RLAIF vs Constitutional AI
+
+| | RLAIF | CAI |
+|-|-------|-----|
+| Signal source | Pairwise comparison judgment | Critique-revise loop |
+| Output | Existing responses ranked | New revised responses generated |
+| Data scaling | O(K²) pairs per prompt | O(P) pairs per prompt |
+| GPU budget | Generate + judge at inference | Generate + critique + revise |
+
+---
+
 ## Constitutional AI Data Generation (`src/training/cai_trainer.py`)
 
 Implements the Constitutional AI loop (Bai et al. 2022): generate an initial response → critique against each constitutional principle → revise → save (initial, revised) pairs as DPO training data.

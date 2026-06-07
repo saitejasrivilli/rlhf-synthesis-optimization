@@ -1,0 +1,10 @@
+{
+  "n_prompts": 10,
+  "n_candidates": 40,
+  "n_comparisons": 60,
+  "n_pairs": 60,
+  "pairs_per_prompt": 6.0,
+  "avg_chosen_len": 312,
+  "avg_rejected_len": 194,
+  "len_gap": 118
+}
