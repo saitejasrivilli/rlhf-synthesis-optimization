@@ -1,0 +1,6 @@
+{
+  "n_examples": 10,
+  "sft_records": 10,
+  "dpo_records": 10,
+  "avg_length_delta": 53.0
+}

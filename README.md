@@ -114,6 +114,61 @@ python scripts/train_agent_grpo.py --use_wandb --wandb_project rlhf-synthesis
 
 ---
 
+## Constitutional AI Data Generation (`src/training/cai_trainer.py`)
+
+Implements the Constitutional AI loop (Bai et al. 2022): generate an initial response → critique against each constitutional principle → revise → save (initial, revised) pairs as DPO training data.
+
+### Constitution (5 principles)
+
+1. Is the response harmful, unethical, or dangerous? → rewrite safe
+2. Is the response honest and factually accurate? → correct false claims
+3. Is the response helpful? → improve completeness
+4. Does the response respect human dignity? → revise demeaning language
+5. Is the response clear and well-structured? → improve clarity
+
+### Algorithm
+
+```
+prompt → model → initial_response
+                      ↓
+         for each principle:
+           critique_prompt → model → critique
+           revision_prompt → model → revised_response
+                      ↓
+  DPO pair: (prompt, chosen=revised_response, rejected=initial_response)
+  SFT pair: (prompt, response=final_revised_response)
+```
+
+### Demo results (rule-based model, 10 prompts, 2 principles each)
+
+```bash
+python scripts/train_cai.py --mode demo --n_prompts 10
+```
+
+| Metric | Value |
+|--------|-------|
+| Prompts processed | 10 |
+| SFT records generated | 10 |
+| DPO pairs generated | 10 |
+| Avg length delta | +53 chars (revised longer than initial) |
+| Substantive critiques | 20/20 (100%) |
+| Issue-flagging critiques | 20/20 (100%) |
+
+### With a real model
+
+```bash
+python scripts/train_cai.py \
+    --mode hf \
+    --model Qwen/Qwen2.5-7B-Instruct \
+    --n_prompts 1000 \
+    --n_principles 3 \
+    --output_dir output/cai_qwen
+```
+
+Output: `cai_sft.jsonl` and `cai_dpo.jsonl` — ready to feed into any standard SFT or DPO trainer.
+
+---
+
 ## Pipeline
 
 ```
