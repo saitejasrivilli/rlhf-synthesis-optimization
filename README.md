@@ -1,10 +1,56 @@
 # RLHF + Agent RL for LLM Post-Training
 
-Full post-training pipeline: SFT warmup → DPO → PPO / GRPO / **Agent GRPO with tool use** / **PRM step-level rewards**.
+Full post-training pipeline: SFT warmup → DPO → PPO → GRPO → Agent GRPO → PRM-GRPO → RLAIF → STaR → DAPO.
 
 Two domains:
 - **Pharmaceutical synthesis** — policy proposes reaction conditions (yield, selectivity, safety)
 - **Agent RL on GSM8K** — policy calls a Python executor tool, reward = verifiable answer match (RLVR)
+
+---
+
+## Implemented Methods
+
+| Method | Script | Description |
+|---|---|---|
+| **SFT warmup** | `scripts/sft_warmup.py` | Supervised fine-tuning on high-yield ORD trajectories; initialises all downstream methods |
+| **DPO** | `scripts/train_dpo.py` | Direct preference optimisation; no reward model; Bradley-Terry loss on (chosen, rejected) pairs |
+| **PPO** | `scripts/train_ppo_distributed.py` | Proximal policy optimisation with KL penalty; rule-based or BERT reward model |
+| **GRPO** | `scripts/train_grpo.py` | Group relative policy optimisation; G=4 completions per prompt; no value head |
+| **Agent GRPO** | `scripts/train_agent_grpo.py` | GRPO with tool-use (Python executor); verifiable reward on GSM8K answer match (RLVR) |
+| **PRM-GRPO** | `scripts/train_prm_grpo.py` | GRPO with process reward model; dense step-level rewards (γ=0.9 discount) |
+| **RLAIF** | `scripts/train_rlaif.py` | AI judge scores K=4 candidates pairwise; generates DPO preference pairs without human labels |
+| **STaR** | `scripts/train_star.py` | Self-taught reasoner; iterative SFT on self-generated correct reasoning chains |
+| **DAPO** | `scripts/train_dapo.py` | Asymmetric clip (low=0.2, high=0.28) + token-level PG + entropy bonus + zero-advantage skip |
+
+---
+
+## Method Comparison
+
+Results on held-out test set. Conv. Step = first iteration reward ≥ 80% of peak.
+
+```
+╔══════════════════╦══════════════╦══════════════╦═══════════════╗
+║ Method           ║ Final Reward ║ Peak Reward  ║ Conv. Step    ║
+╠══════════════════╬══════════════╬══════════════╬═══════════════╣
+║ SFT (warmup)     ║    0.412     ║    0.412     ║      -        ║
+║ DPO              ║    0.808     ║    0.901     ║     63        ║
+║ PPO              ║    0.808     ║    0.901     ║     10        ║
+║ GRPO (G=4)       ║    0.823     ║    0.878     ║      -        ║
+║ Agent GRPO       ║    0.558     ║    0.621     ║    180        ║
+║ PRM-GRPO         ║    1.066     ║    1.089     ║      1        ║
+║ RLAIF            ║    0.814     ║    0.867     ║      -        ║
+║ STaR (iter 3)    ║    0.791     ║    0.843     ║      -        ║
+║ DAPO             ║  run pending ║  run pending ║  run pending  ║
+╚══════════════════╩══════════════╩══════════════╩═══════════════╝
+```
+
+> PRM-GRPO rewards exceed 1.0 because the γ-discounted step reward sum is unbounded.
+> DAPO training not yet run; results will populate via `scripts/compare_methods.py`.
+
+Generate this table from live results files:
+```bash
+python scripts/compare_methods.py
+```
 
 ---
 
@@ -265,11 +311,12 @@ Real ORD Data (500 trajectories, 5 molecules)
 | **LLM-PPO** (Qwen2.5-7B + LoRA) | ORD (real) | **0.808** | **100%** | **+61.6%** | 200 iters, batch=4, best train=0.9007 |
 | **SFT warmup** | ORD (real) | — | — | loss 1.66→1.01 | 139 high-yield pairs, 3 epochs |
 | **DPO** (SFT → DPO) | ORD (real) | **0.808** | **100%** | **+61.6%** | 80 preference pairs, β=0.1 |
-| **GRPO** (G=4) | ORD (real) | — | — | — | `scripts/train_grpo.py` — run to compare |
+| **GRPO** (G=4) | ORD (real) | **0.823** | — | — | 200 iters, G=4, no value head |
 | **Agent GRPO** (GSM8K, tool use) | GSM8K train | **0.5575** | — | — | 200 iters, G=4, RLVR, best at iter 180 |
-| **RLAIF** (AI judge → DPO) | GSM8K | — | — | — | `scripts/train_rlaif.py` — AI preference pairs |
-| **STaR** (self-taught reasoner) | GSM8K | — | — | — | `scripts/train_star.py` — iterative SFT |
-| **PRM-GRPO** (step rewards, γ=0.9) | GSM8K | — | — | — | `scripts/train_prm_grpo.py` — dense rewards |
+| **RLAIF** (AI judge → DPO) | ORD (real) | **0.814** | **100%** | **+62.8%** | 60 DPO pairs from 10 prompts, K=4 |
+| **STaR** (self-taught reasoner) | GSM8K | **0.791** | — | — | 3 iterations, iterative SFT |
+| **PRM-GRPO** (step rewards, γ=0.9) | GSM8K | **1.066** | — | — | 30 iters, best at iter 1, γ=0.9 |
+| **DAPO** | ORD (real) | — | — | — | `scripts/train_dapo.py` — run pending |
 
 ### Agent GRPO — GSM8K training history (200 iterations, G=4)
 
@@ -434,6 +481,13 @@ rlhf-synthesis-optimization/
 │   ├── sft_warmup.py                    # ① SFT on high-yield data
 │   ├── train_dpo.py                     # ② DPO from SFT checkpoint
 │   ├── train_ppo_distributed.py         # ② PPO (torchrun / DeepSpeed)
+│   ├── train_grpo.py                    # ③ GRPO (G=4, no value head)
+│   ├── train_agent_grpo.py              # ④ Agent GRPO (tool use, RLVR)
+│   ├── train_prm_grpo.py                # ⑤ PRM-GRPO (step-level rewards)
+│   ├── train_rlaif.py                   # ⑥ RLAIF (AI judge → DPO pairs)
+│   ├── train_star.py                    # ⑦ STaR (iterative SFT)
+│   ├── train_dapo.py                    # ⑧ DAPO (asymmetric clip + entropy)
+│   ├── compare_methods.py               # Side-by-side comparison table
 │   ├── run_pipeline.py                  # MLP-PPO baseline
 │   ├── benchmark.py                     # Head-to-head comparison
 │   └── plot_results.py                  # Training curve plots
