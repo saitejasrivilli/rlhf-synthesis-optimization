@@ -79,7 +79,7 @@ class LLMSynthesisPolicy(nn.Module):
 
             base = AutoModelForCausalLM.from_pretrained(
                 model_name,
-                dtype=torch.float16,
+                torch_dtype=torch.float16,
                 device_map=device_map,
                 load_in_8bit=load_in_8bit,
             )

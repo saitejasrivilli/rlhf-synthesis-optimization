@@ -209,9 +209,15 @@ def run_grpo_with_prm(args):
     return results
 
 
+def _model_device(policy):
+    """Get the device of the first model parameter (works with device_map='auto')."""
+    return next(policy.model.parameters()).device
+
+
 def _generate_one(policy, prompt, max_new_tokens):
     """Generate a single response; returns (prompt_ids, response_ids, text)."""
-    enc = policy.tokenizer(prompt, return_tensors="pt").to(policy.device)
+    device = _model_device(policy)
+    enc = policy.tokenizer(prompt, return_tensors="pt").to(device)
     with torch.no_grad():
         out = policy.model.generate(
             **enc,
@@ -229,10 +235,11 @@ def _generate_one(policy, prompt, max_new_tokens):
 
 def _pg_loss(policy, prompt, response, advantage, kl_coeff):
     """Compute policy-gradient loss for one (prompt, response) pair."""
-    enc = policy.tokenizer(prompt, return_tensors="pt").to(policy.device)
+    device = _model_device(policy)
+    enc = policy.tokenizer(prompt, return_tensors="pt").to(device)
     resp_ids = policy.tokenizer(
         response, return_tensors="pt", add_special_tokens=False
-    ).input_ids.to(policy.device)
+    ).input_ids.to(device)
 
     if resp_ids.shape[1] == 0:
         return None
